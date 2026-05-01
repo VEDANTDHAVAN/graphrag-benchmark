@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-dotenv
+
+sentence-transformers
+faiss-cpu
+numpy
+
+requests
+
+bert-score
+scikit-learn
+
+spacy

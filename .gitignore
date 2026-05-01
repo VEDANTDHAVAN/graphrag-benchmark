@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+
+# Env
+.env
+venv
+
+# Data (keep structure, not content)
+data/raw/*
+data/processed/*
+data/embeddings/*
+!data/raw/.keep
+!data/processed/.keep
+!data/embeddings/.keep
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
