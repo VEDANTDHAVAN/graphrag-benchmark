@@ -1,6 +1,6 @@
 import uuid
 
-from ingestion.preprocess import extract_text_from_pdf
+from ingestion.preprocess import extract_text_from_file
 from ingestion.chunk_data import chunk_text
 from ingestion.build_embeddings import add_to_vector_store
 from ingestion.entity_extraction import extract_entities
@@ -19,24 +19,30 @@ async def ingest_document(file_name: str, file_bytes: bytes):
     # -------------------------
     # 1. PREPROCESS
     # -------------------------
-    text = extract_text_from_pdf(file_bytes)
-    if not text.strip():
-        raise ValueError("No extractable text found in PDF")
+    pages, file_type = extract_text_from_file(file_name, file_bytes)
+    if not pages or not any(p.strip() for p in pages):
+        raise ValueError("No extractable text found in file")
 
     # -------------------------
     # 2. CHUNKING
     # -------------------------
-    chunks = chunk_text(text)
-
-    chunk_records = [
-        {
-            "chunk_id": f"{doc_id}_chunk_{i}",
-            "doc_id": doc_id,
-            "text": chunk,
-            "source_file": file_name,
-        }
-        for i, chunk in enumerate(chunks)
-    ]
+    chunk_records = []
+    chunk_index = 0
+    for page_num, page_text in enumerate(pages, start=1):
+        if not page_text.strip():
+            continue
+        page_chunks = chunk_text(page_text)
+        for chunk in page_chunks:
+            chunk_records.append(
+                {
+                    "chunk_id": f"{doc_id}_chunk_{chunk_index}",
+                    "doc_id": doc_id,
+                    "text": chunk,
+                    "source_file": file_name,
+                    "page": page_num if file_type == "pdf" else None,
+                }
+            )
+            chunk_index += 1
 
     # -------------------------
     # 3. EMBEDDING + STORE (ONLY ONCE)

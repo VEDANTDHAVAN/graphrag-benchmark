@@ -1,180 +1,129 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./components/ui/Card";
 
-type PipelineResult = {
-  status: "success" | "error";
-  answer?: string;
-  context?: string;
-  tokens?: number;
-  latency?: number;
-  error?: string;
-  details?: Record<string, unknown>;
-};
-
-type QueryResponse = {
-  query: string;
-  pipelines: Record<"llm_only" | "basic_rag" | "graphrag", PipelineResult>;
-};
-
-const PIPELINES: Array<{
-  id: keyof QueryResponse["pipelines"];
-  label: string;
-  accent: string;
-}> = [
-  { id: "llm_only", label: "LLM Only", accent: "border-slate-400" },
-  { id: "basic_rag", label: "Basic RAG", accent: "border-emerald-500" },
-  { id: "graphrag", label: "GraphRAG", accent: "border-amber-500" },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 export default function Home() {
-  const [query, setQuery] = useState("What does RAG-HAT do for hallucination in RAG?");
-  const [result, setResult] = useState<QueryResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    setLoading(true);
-    setError(null);
-    setResult(null);
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/query`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: trimmed }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(typeof data.detail === "string" ? data.detail : "Query failed");
-      }
-
-      setResult(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Query failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <main className="min-h-screen bg-neutral-50 text-neutral-950">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-5 py-6">
-        <header className="flex flex-col gap-3 border-b border-neutral-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold">GraphRAG Benchmark</h1>
-            <p className="mt-1 text-sm text-neutral-600">
-              Compare LLM-only, vector RAG, and graph-guided retrieval.
-            </p>
-          </div>
-          <Link
-            href="/upload"
-            className="inline-flex h-10 items-center justify-center border border-neutral-300 bg-white px-4 text-sm font-medium hover:bg-neutral-100"
-          >
-            Upload PDF
-          </Link>
+    <main>
+      <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-8 px-6 py-8">
+        <header className="flex flex-col gap-3">
+          <h1 className="text-3xl font-semibold text-[var(--text-primary)]">
+            GraphRAG Benchmark
+          </h1>
+          <p className="text-sm leading-6 text-[var(--text-secondary)]">
+            A local benchmark harness to compare three pipelines side-by-side:
+            <span className="font-medium"> LLM-only</span>,{" "}
+            <span className="font-medium">Basic RAG (ChromaDB)</span>, and{" "}
+            <span className="font-medium">GraphRAG (NetworkX)</span>.
+          </p>
         </header>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3 border-b border-neutral-200 pb-6">
-          <label htmlFor="query" className="text-sm font-medium text-neutral-700">
-            Query
-          </label>
-          <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
-            <textarea
-              id="query"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              rows={3}
-              className="min-h-24 resize-y border border-neutral-300 bg-white p-3 text-base outline-none focus:border-neutral-900"
-            />
-            <button
-              type="submit"
-              disabled={loading || !query.trim()}
-              className="h-12 border border-neutral-950 bg-neutral-950 px-6 text-sm font-semibold text-white hover:bg-neutral-800 disabled:cursor-not-allowed disabled:border-neutral-300 disabled:bg-neutral-300"
-            >
-              {loading ? "Running" : "Run"}
-            </button>
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-        </form>
-
-        <section className="grid gap-4 xl:grid-cols-3">
-          {PIPELINES.map((pipeline) => {
-            const item = result?.pipelines[pipeline.id];
-            return (
-              <article
-                key={pipeline.id}
-                className={`min-h-96 border-t-4 ${pipeline.accent} bg-white p-4 shadow-sm`}
-              >
-                <div className="flex items-start justify-between gap-3 border-b border-neutral-200 pb-3">
-                  <div>
-                    <h2 className="text-lg font-semibold">{pipeline.label}</h2>
-                    {item && (
-                      <p className="mt-1 text-xs uppercase tracking-wide text-neutral-500">
-                        {item.status}
-                      </p>
-                    )}
+        <section className="grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              href: "/upload",
+              title: "1. Upload Files",
+              desc: "Ingest papers into ChromaDB + the local knowledge graph.",
+            },
+            {
+              href: "/benchmark",
+              title: "2. Run Benchmark",
+              desc: "Compare answers, tokens, latency, and context side-by-side.",
+            },
+            {
+              href: "/graph",
+              title: "3. Inspect Graph",
+              desc: "Visualize nodes and edges from NetworkX ingestion.",
+            },
+          ].map((item) => (
+            <Link key={item.href} href={item.href} className="block">
+              <Card className="transition-colors hover:bg-white/60 dark:hover:bg-white/5">
+                <CardContent className="px-5 py-4">
+                  <div className="text-sm font-semibold text-[var(--text-primary)]">
+                    {item.title}
                   </div>
-                  {item?.status === "success" && (
-                    <div className="text-right text-xs text-neutral-600">
-                      <div>{item.latency?.toFixed(2)}s</div>
-                      <div>{item.tokens ?? 0} tokens</div>
-                    </div>
-                  )}
-                </div>
-
-                {!item && (
-                  <div className="flex min-h-72 items-center justify-center text-sm text-neutral-500">
-                    {loading ? "Waiting" : "No result"}
+                  <div className="mt-1 text-xs text-[var(--text-secondary)]">
+                    {item.desc}
                   </div>
-                )}
-
-                {item?.status === "error" && (
-                  <p className="mt-4 whitespace-pre-wrap text-sm text-red-700">{item.error}</p>
-                )}
-
-                {item?.status === "success" && (
-                  <div className="mt-4 flex flex-col gap-4">
-                    <section>
-                      <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                        Answer
-                      </h3>
-                      <p className="whitespace-pre-wrap text-sm leading-6">{item.answer}</p>
-                    </section>
-
-                    {item.context && (
-                      <details className="border-t border-neutral-200 pt-3">
-                        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                          Context
-                        </summary>
-                        <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap bg-neutral-50 p-3 text-xs leading-5 text-neutral-700">
-                          {item.context}
-                        </pre>
-                      </details>
-                    )}
-
-                    {item.details && (
-                      <details className="border-t border-neutral-200 pt-3">
-                        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                          Details
-                        </summary>
-                        <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap bg-neutral-50 p-3 text-xs leading-5 text-neutral-700">
-                          {JSON.stringify(item.details, null, 2)}
-                        </pre>
-                      </details>
-                    )}
-                  </div>
-                )}
-              </article>
-            );
-          })}
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </section>
+
+        <Card>
+          <CardHeader>
+            <div>
+              <CardTitle>Operating Guidelines</CardTitle>
+              <CardDescription>Keep the demo smooth and repeatable.</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-5 text-sm text-[var(--text-primary)]">
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                  Startup Order
+                </div>
+                <ol className="mt-2 list-decimal space-y-1 pl-5">
+                  <li>
+                    Start the backend API (FastAPI) and confirm{" "}
+                    <span className="font-mono">{API_URL}/health</span> returns{" "}
+                    <span className="font-mono">{"{status: ok}"}</span>.
+                  </li>
+                  <li>Start the frontend and open the app in a browser.</li>
+                  <li>Upload one or more PDFs before benchmarking queries.</li>
+                </ol>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                  Smooth Demos
+                </div>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>
+                    Keep queries specific (use key terms from title/abstract) to get more
+                    stable comparisons.
+                  </li>
+                  <li>
+                    Uploading the same PDF multiple times increases noise; prefer one
+                    clean ingestion run per doc.
+                  </li>
+                  <li>
+                    If results look off, re-upload the paper and rerun the same query to
+                    compare pipelines under identical inputs.
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                  What Each Pipeline Uses
+                </div>
+                <ul className="mt-2 list-disc space-y-1 pl-5">
+                  <li>LLM-only: no retrieved context.</li>
+                  <li>Basic RAG: top chunks from ChromaDB similarity search.</li>
+                  <li>
+                    GraphRAG: graph-traversed chunks via entities/relations in NetworkX (plus a
+                    compact context builder).
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <footer className="text-xs text-[var(--text-secondary)]">
+          API: <span className="font-mono">{API_URL}</span>
+        </footer>
       </div>
     </main>
   );

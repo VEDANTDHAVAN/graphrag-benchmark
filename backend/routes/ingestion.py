@@ -5,8 +5,9 @@ router = APIRouter()
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Only PDF supported")
+    allowed = (".pdf", ".txt", ".csv")
+    if not any(file.filename.lower().endswith(ext) for ext in allowed):
+        raise HTTPException(status_code=400, detail="Only PDF, TXT, CSV supported")
 
     content = await file.read()
 
