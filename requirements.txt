@@ -1,14 +1,23 @@
 fastapi
 uvicorn
+python-multipart
 python-dotenv
 
 sentence-transformers
 faiss-cpu
 numpy
-
+PyMuPDF
 requests
+networkx
+chromadb
 
 bert-score
 scikit-learn
 
 spacy
+
+openai
+google-generativeai
+tiktoken
+
+pyTigerGraph

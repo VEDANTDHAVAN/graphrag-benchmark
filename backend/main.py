@@ -1,17 +1,22 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from pipelines.llm_only.llm_pipeline import run_llm_only
-from pipelines.basic_rag.rag_pipeline import run_basic_rag
-from pipelines.graphrag.graphrag_pipeline import run_graphrag
 
-app = FastAPI()
+from backend.routes import ingestion, query
 
-@app.post("/query")
-def query_all(data: dict):
-    query = data["query"]
+app = FastAPI(title="GraphRAG Benchmark API")
 
-    return {
-        "query": query,
-        "llm_only": run_llm_only(query),
-        "basic_rag": run_basic_rag(query, vector_store=None),
-        "graphrag": run_graphrag(query)
-    }
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # tighten later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(ingestion.router, prefix="/api")
+app.include_router(query.router, prefix="/api")
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}

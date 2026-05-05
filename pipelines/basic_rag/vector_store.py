@@ -1,36 +1,93 @@
-import faiss
-import numpy as np
-import pickle
 import os
+from typing import Any, Dict, List, Optional
+
+import chromadb
+
+from pipelines.basic_rag.embedding import embed_text
+
+CHROMA_DIR = "data/chroma"
+COLLECTION_NAME = "chunks"
+
 
 class VectorStore:
-    def __init__(self, dim):
-        self.index = faiss.IndexFlatL2(dim)
-        self.texts = []
+    """
+    ChromaDB-backed persistent vector store.
 
-    def add(self, embeddings, texts):
-        self.index.add(np.array(embeddings))
-        self.texts.extend(texts)
+    Public API (used by ingestion/pipelines):
+    - add_documents(chunk_records)
+    - search(query, k=5, filters=None)
 
-    def search(self, query_embedding, k=3):
-        D, I = self.index.search(query_embedding, k)
-        return [self.texts[i] for i in I[0]]
+    Notes:
+    - Uses chunk_id as the Chroma record id.
+    - Stores chunk text as document, plus metadata fields.
+    """
 
-    def save(self, path_prefix):
-        faiss.write_index(self.index, f"{path_prefix}.index")
-        with open(f"{path_prefix}.pkl", "wb") as f:
-            pickle.dump(self.texts, f)
+    def __init__(self):
+        os.makedirs(CHROMA_DIR, exist_ok=True)
+        self.client = chromadb.PersistentClient(path=CHROMA_DIR)
+        self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
 
     @classmethod
-    def load(cls, path_prefix):
-        if not os.path.exists(f"{path_prefix}.index"):
-            raise FileNotFoundError("Vector store not found. Run ingestion first.")
+    def load(cls, path: Optional[str] = None):
+        # Keep signature stable; `path` is unused for Chroma.
+        return cls()
 
-        index = faiss.read_index(f"{path_prefix}.index")
-        with open(f"{path_prefix}.pkl", "rb") as f:
-            texts = pickle.load(f)
+    def add_documents(self, chunk_records: List[Dict[str, Any]]) -> int:
+        if not chunk_records:
+            return 0
 
-        store = cls(index.d)
-        store.index = index
-        store.texts = texts
-        return store
+        ids: List[str] = []
+        documents: List[str] = []
+        metadatas: List[Dict[str, Any]] = []
+
+        for record in chunk_records:
+            chunk_id = record["chunk_id"]
+            ids.append(chunk_id)
+            documents.append(record["text"])
+            metadatas.append(
+                {
+                    "doc_id": record.get("doc_id", ""),
+                    "chunk_id": chunk_id,
+                    "source_file": record.get("source_file", ""),
+                    "page": record.get("page"),
+                }
+            )
+
+        embeddings = embed_text(documents)
+        embeddings_list = [e.tolist() for e in embeddings]
+
+        # Chroma raises if ids already exist. For ingestion re-runs, upsert.
+        self.collection.upsert(
+            ids=ids,
+            documents=documents,
+            embeddings=embeddings_list,
+            metadatas=metadatas,
+        )
+        return len(ids)
+
+    def search(self, query: str, k: int = 5, filters: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+        query_embedding = embed_text([query])[0].tolist()
+
+        result = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=k,
+            where=filters,
+            include=["documents", "metadatas", "distances"],
+        )
+
+        documents = (result.get("documents") or [[]])[0]
+        metadatas = (result.get("metadatas") or [[]])[0]
+        distances = (result.get("distances") or [[]])[0]
+
+        out: List[Dict[str, Any]] = []
+        for doc, meta, dist in zip(documents, metadatas, distances):
+            record = dict(meta or {})
+            record["text"] = doc
+            record["score"] = float(dist) if dist is not None else None
+            out.append(record)
+        return out
+
+    # Back-compat helpers (old FAISS codepaths)
+    def search_text(self, query: str, k: int = 5):
+        return self.search(query, k=k)
+

@@ -1,17 +1,17 @@
-from .embedding import embed_text
-
 def retrieve(query, vector_store, k=3):
-    q_emb = embed_text([query])
-    results = vector_store.search(q_emb, k * 2) # fetch extra
+    results = vector_store.search(query, k=k * 10)
 
-    # remove duplicates
     unique = []
     seen = set()
 
-    for r in results:
-        if r not in seen:
-            unique.append(r)
-            seen.add(r)
+    for record in results:
+        chunk_id = record.get("chunk_id")
+        text = record.get("text", "")
+        dedupe_key = " ".join(text.split()).lower() or chunk_id
+
+        if dedupe_key not in seen:
+            unique.append(record)
+            seen.add(dedupe_key)
 
         if len(unique) == k:
             break
