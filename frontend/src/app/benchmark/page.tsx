@@ -68,8 +68,7 @@ function formatRate(value?: number | null) {
 }
 
 export default function BenchmarkPage() {
-  const [query, setQuery] = useState("What is the main contribution or focus of the paper about laser beams propagating through turbulent atmospheres?
-");
+  const [query, setQuery] = useState("What is the main contribution or focus of the paper about laser beams propagating through turbulent atmospheres?");
   const [result, setResult] = useState<QueryResponse | null>(null);
   const [summary, setSummary] = useState<FinalSummaryResponse | null>(null);
   const [loading, setLoading] = useState(false);
