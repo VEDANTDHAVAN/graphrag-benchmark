@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_URL } from "../lib/showcase";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/Card";
 
@@ -21,13 +22,10 @@ export default function UploadPage() {
             const formData = new FormData();
             formData.append("file", file);
 
-            const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/upload`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
+            const res = await fetch(`${API_URL}/api/upload`, {
+                method: "POST",
+                body: formData,
+            });
 
             if (!res.ok) {
                 throw new Error(`Upload failed: ${res.status}`);
@@ -48,21 +46,24 @@ export default function UploadPage() {
                 <h1 className="text-2xl font-semibold text-[var(--text-primary)]">Upload</h1>
                 <p className="mt-2 text-sm text-[var(--text-secondary)]">
                     Upload a research file to ingest into ChromaDB and the local NetworkX graph.
-                    Supported: PDF, TXT, CSV.
                 </p>
             </header>
 
             <Card>
                 <CardHeader>
                     <div>
-                        <CardTitle>File</CardTitle>
-                        <CardDescription>Choose a single file and ingest it.</CardDescription>
+                        <CardTitle>Scientific Paper PDF</CardTitle>
+                        <CardDescription>Choose a single scientific or research paper PDF for ingestion.</CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm leading-6 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+                        Upload constraint: please upload only scientific or research paper PDFs. The benchmark is tuned for long-form academic text with abstracts, methods, concepts, and cross-document relationships.
+                    </div>
+
                     <input
                         type="file"
-                        accept=".pdf,.txt,.csv"
+                        accept=".pdf,application/pdf"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
                         className="block w-full rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2 text-sm text-[var(--text-primary)] file:mr-3 file:rounded-md file:border-0 file:bg-[var(--surface)] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[var(--text-primary)]"
                     />
@@ -74,7 +75,7 @@ export default function UploadPage() {
                             variant="primary"
                             className="h-10"
                         >
-                            {loading ? "Uploading..." : "Upload"}
+                            {loading ? "Uploading..." : "Upload Paper"}
                         </Button>
                         <div className="text-xs text-[var(--text-secondary)]">
                             {file ? file.name : "No file selected"}
@@ -96,7 +97,7 @@ export default function UploadPage() {
                     <CardContent>
                         <ol className="grid gap-2 text-sm">
                             {[
-                                { id: "upload", label: "File received" },
+                                { id: "upload", label: "Paper received" },
                                 { id: "extract", label: "Text extracted" },
                                 { id: "chunk", label: "Chunked" },
                                 { id: "vector", label: "Stored in ChromaDB" },
@@ -130,7 +131,7 @@ export default function UploadPage() {
                     <CardContent>
                         {!response ? (
                             <div className="text-sm text-[var(--text-secondary)]">
-                                Upload a file to see ingestion stats.
+                                Upload a research paper PDF to see ingestion stats.
                             </div>
                         ) : (
                             <pre className="max-h-[420px] overflow-auto rounded-lg border border-[var(--border)] bg-[var(--background)] p-3 text-xs leading-5 text-[var(--text-primary)]">
