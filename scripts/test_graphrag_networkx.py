@@ -4,7 +4,8 @@ from pipelines.graphrag.graphrag_pipeline import run_graphrag
 
 
 def main():
-    query = "What does RAG-HAT do for hallucination in RAG?"
+    query = "What is the main contribution or focus of the paper about laser beams propagating through turbulent atmospheres?
+"
     result = run_graphrag(query)
     print(json.dumps(result["details"], indent=2))
     print("\nanswer:\n")

@@ -1,14 +1,24 @@
 # Deployment
 
-## Recommended Deployment: NetworkX + ChromaDB
+## Recommended Free Deployment: Vercel + Hugging Face Spaces
 
-The simplest and recommended deployment does not require TigerGraph.
+Render's free and low-cost 512 MB tiers are too small for live pipeline queries because the backend loads ChromaDB, sentence-transformers/PyTorch, and the NetworkX graph. For a no-cost live demo, use:
 
-Production architecture:
+```text
+Frontend: Vercel
+Backend: Hugging Face Spaces Docker, CPU Basic
+GraphRAG: NetworkX inside the backend process
+Vector store: embedded ChromaDB files bundled with the Space
+TigerGraph: disabled by default
+```
+
+Hugging Face Spaces CPU Basic is the preferred free backend target for this project because it provides substantially more memory than 512 MB PaaS instances.
+
+## Architecture
 
 ```text
 Frontend (Vercel)
-  -> Backend API (Render or VPS)
+  -> Backend API (Hugging Face Spaces, Render paid tier, or VPS)
   -> NetworkX GraphRAG engine inside the backend process
   -> Embedded ChromaDB persisted on disk
   -> Optional TigerGraph connector, disabled by default
@@ -25,9 +35,53 @@ NetworkX is the canonical GraphRAG engine for this benchmark. TigerGraph is an o
 NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
 ```
 
+For Hugging Face Spaces:
+
+```text
+NEXT_PUBLIC_API_URL=https://YOUR_USERNAME-YOUR_SPACE.hf.space
+```
+
 Do not add TigerGraph credentials or private backend secrets to Vercel. The frontend only needs public-safe variables prefixed with `NEXT_PUBLIC_`.
 
+## Backend on Hugging Face Spaces
+
+This is the recommended free backend deployment.
+
+Build the Space bundle:
+
+```sh
+python scripts/prepare_hf_space.py
+```
+
+Create a new Hugging Face Space:
+
+1. Choose **Docker** as the SDK.
+2. Upload the contents of `dist/hf-space`.
+3. Add secrets:
+
+```text
+ENV=production
+OPENAI_API_KEY
+HF_TOKEN
+FRONTEND_URL=https://your-frontend.vercel.app
+BACKEND_URL=https://your-username-your-space.hf.space
+ADMIN_API_KEY
+SESSION_SECRET
+TIGERGRAPH_ENABLED=false
+```
+
+4. Test:
+
+```text
+https://your-username-your-space.hf.space/health
+https://your-username-your-space.hf.space/ready
+```
+
+Hugging Face Spaces free storage is not a database. Bundle the generated ChromaDB, graph, and result artifacts with the Space for a reproducible demo. Do not upload `.env` files.
+
 ## Backend on Render
+
+Use Render only if you choose a paid instance with enough memory. The 512 MB tiers are not recommended for live pipeline queries.
 
 Use the root `render.yaml`.
 

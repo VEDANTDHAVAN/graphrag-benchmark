@@ -1,18 +1,39 @@
-## GraphRAG Benchmark (Hackathon)
+# GraphRAG Benchmark
 
-Local benchmark harness to compare three pipelines side-by-side:
+GraphRAG Benchmark is a reproducible benchmark harness that compares three answer-generation pipelines on the same scientific-paper corpus:
 
-- LLM-only
-- Basic RAG (ChromaDB)
-- GraphRAG (NetworkX)
+- **LLM-only**: answers directly from the model without retrieved context.
+- **Basic RAG**: retrieves chunks from ChromaDB using vector similarity.
+- **GraphRAG**: retrieves graph-connected chunks using NetworkX-based entity traversal and multi-hop graph context.
 
-### Why NetworkX is the Primary GraphRAG Engine
+The project measures both efficiency and answer quality:
+
+- Tokens
+- Latency
+- Estimated cost
+- LLM-as-a-Judge pass rate
+- BERTScore F1
+
+The dashboard shows all three pipelines side-by-side and highlights winners for accuracy, token usage, speed, and overall score.
+
+## Architecture
+
+```text
+Frontend dashboard (Next.js)
+  -> Backend API (FastAPI)
+  -> LLM-only pipeline
+  -> Basic RAG pipeline with ChromaDB
+  -> GraphRAG pipeline with NetworkX
+  -> Optional TigerGraph connector, disabled by default
+```
+
+## Why NetworkX is the Primary GraphRAG Engine
 
 The goal of this project is methodological benchmarking: prove whether graph-structured retrieval and multi-hop reasoning improve efficiency and answer quality compared with LLM-only and Basic RAG.
 
-GraphRAG is defined here by the retrieval method, not by dependence on a specific graph database vendor. NetworkX provides the graph traversal and reasoning capabilities needed for the benchmark while staying lightweight, deterministic, and reproducible on any laptop.
+GraphRAG is defined here by the retrieval method, not by dependence on a specific graph database vendor. NetworkX provides the graph traversal and reasoning capabilities needed for benchmarking while staying lightweight, deterministic, and reproducible on any laptop.
 
-TigerGraph remains supported as an optional enterprise connector for large-scale production use, but it is not required for local development, ingestion, benchmarking, evaluation, dashboard functionality, or judging. In practice, TigerGraph setup introduced operational complexity such as authentication issues, Docker resource requirements, and infrastructure overhead that distracted from the benchmark objective.
+TigerGraph remains supported as an optional enterprise connector for large-scale production use, but it is not required for local development, ingestion, benchmarking, evaluation, dashboard functionality, or judging. TigerGraph setup introduces operational complexity such as authentication, Docker resource requirements, and infrastructure overhead. Those concerns are useful for enterprise deployment discussions, but they distract from the benchmark objective.
 
 To keep judging easy and reproducible, NetworkX is the default implementation.
 
@@ -26,11 +47,64 @@ To keep judging easy and reproducible, NetworkX is the default implementation.
 | Required for benchmark | Yes | No |
 | Enterprise scalability | Limited | Excellent |
 
-The benchmark conclusions are based on retrieval methodology, not on dependence on a specific graph database.
+**The benchmark conclusions are based on retrieval methodology, not on dependence on a specific graph database.**
 
-### Local Development
+## Repository Layout
 
-Backend (FastAPI):
+```text
+backend/        FastAPI routes and backend services
+frontend/       Next.js dashboard
+pipelines/      LLM-only, Basic RAG, and GraphRAG implementations
+ingestion/      Chunking, embedding, entity extraction, graph building
+evaluation/     LLM judge and BERTScore helpers
+scripts/        Dataset, benchmark, deployment, backup, validation scripts
+data/           Local/generated corpus, graph, ChromaDB, eval, and result artifacts
+deploy/         Deployment-specific templates
+nginx/          Production reverse proxy config
+```
+
+## Environment Variables
+
+Copy the local example:
+
+```powershell
+copy .env.example .env
+```
+
+Core variables:
+
+```text
+LLM_PROVIDER=openai
+OPENAI_API_KEY=
+HF_TOKEN=
+HF_JUDGE_MODEL=meta-llama/Llama-3.1-8B-Instruct
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://127.0.0.1:8000
+ADMIN_API_KEY=
+SESSION_SECRET=
+TIGERGRAPH_ENABLED=false
+```
+
+Local data paths default to:
+
+```text
+CHROMA_PATH=data/chroma
+GRAPH_PATH=data/graph/graphrag_graph.pkl
+UPLOAD_DIR=data/uploads
+```
+
+Production examples live in:
+
+```text
+.env.production.example
+frontend/.env.example
+```
+
+Do not commit `.env`, `.env.production`, tokens, or API keys.
+
+## Local Development
+
+Backend:
 
 ```powershell
 python -m venv venv
@@ -39,92 +113,51 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload --port 8000
 ```
 
-Frontend (Next.js):
+Frontend:
 
 ```powershell
 cd frontend
 copy .env.example .env.local
-# edit NEXT_PUBLIC_API_URL if needed
 npm.cmd install
 npm.cmd run dev
 ```
 
 Open:
 
-- Frontend: `http://localhost:3005`
-- Backend health: `http://127.0.0.1:8000/health`
-
-### Deployment Target
-
-- Frontend on Vercel
-- Backend on Render (Docker), running NetworkX GraphRAG by default
-- Persistent disk mounted at `/data` for:
-  - ChromaDB: `/data/chroma`
-  - Graph: `/data/graph/graphrag_graph.pkl`
-  - Uploads: `/data/uploads`
-- TigerGraph is optional and disabled by default.
-
-### Render Deployment (Backend)
-
-1. Push this repo to GitHub.
-2. In Render, create a new service from repo using the blueprint (`render.yaml`), or create a Docker web service manually pointing at `backend/Dockerfile`.
-3. Ensure a persistent disk is attached at `/data`.
-4. Set env vars (Render):
-   - `CHROMA_PATH=/data/chroma`
-   - `GRAPH_PATH=/data/graph/graphrag_graph.pkl`
-   - `UPLOAD_DIR=/data/uploads`
-   - `CORS_ORIGINS=https://YOUR-VERCEL-DOMAIN.vercel.app` (set after Vercel deploy)
-
-Verify:
-
-- `GET https://YOUR-RENDER-URL/health` returns `{"status":"ok"}`
-- `GET https://YOUR-RENDER-URL/ready` returns readiness checks for storage, NetworkX artifacts, and optional TigerGraph configuration.
-
-### Vercel Deployment (Frontend)
-
-1. Import `frontend/` as the Vercel project root.
-2. Set env var:
-   - `NEXT_PUBLIC_API_URL=https://YOUR-RENDER-URL`
-3. Deploy.
-
-### Notes
-
-- Local development continues to use repo-relative defaults under `data/`.
-- In production, set `CHROMA_PATH`, `GRAPH_PATH`, and `UPLOAD_DIR` to point at `/data/...`.
-
-### Accuracy Evaluation
-
-Create `evaluation/ground_truth.json` with 30-50 reference answers:
-
-```json
-[
-  {
-    "question": "What does RAG-HAT do for hallucination in RAG?",
-    "correct_answer": "RAG-HAT detects and reduces hallucinated answers by checking generated responses against retrieved evidence."
-  }
-]
+```text
+Frontend: http://localhost:3000
+Benchmark: http://localhost:3000/benchmark
+Backend health: http://127.0.0.1:8000/health
+Backend readiness: http://127.0.0.1:8000/ready
 ```
 
-Use the same questions in `experiments/queries.json`:
+If your frontend runs on another port, update `FRONTEND_URL` and `frontend/.env.local`.
 
-```json
-[
-  { "query": "What does RAG-HAT do for hallucination in RAG?" }
-]
+## Using the App
+
+1. Start backend and frontend.
+2. Open `/benchmark`.
+3. Review the **Final Benchmark Summary** table if `data/results/final_summary.json` exists.
+4. Enter a query and run all pipelines.
+5. Compare answers, context, token usage, latency, and graph details.
+
+Good demo query:
+
+```text
+What is the main contribution or focus of the paper about laser beams propagating through turbulent atmospheres?
 ```
 
-Then run:
+Expected answer:
 
-```powershell
-$env:HF_TOKEN="your_huggingface_token"
-python experiments/run_benchmark.py
+```text
+The paper studies the effect of a random phase diffuser on fluctuations of laser light, also called scintillations, including spatial and temporal phase variations.
 ```
 
-The script writes `experiments/results/combined_results.json` with LLM-as-a-judge pass rate and rescaled BERTScore F1 for each pipeline. To show per-query accuracy in the dashboard for questions that exist in `ground_truth.json`, set `ENABLE_LIVE_ACCURACY=true` before starting the backend.
+## 2 Million Token Benchmark Workflow
 
-### 2 Million Token Benchmark and Accuracy Evaluation
+This workflow uses Hugging Face dataset `armanc/scientific_papers`, config `arxiv`.
 
-Run the full scientific-papers benchmark workflow:
+Run from the repo root:
 
 ```powershell
 python scripts/build_2m_dataset.py
@@ -136,32 +169,314 @@ python scripts/evaluate_accuracy.py
 python scripts/build_final_summary.py
 ```
 
-This uses `armanc/scientific_papers` with the `arxiv` configuration, selects roughly 2,000,000 `cl100k_base` tokens, rebuilds ChromaDB and the NetworkX graph, generates 40 grounded evaluation questions, runs LLM-only, Basic RAG, and GraphRAG, and writes:
+Outputs:
 
-- `data/raw/scientific_papers_2m.jsonl`
-- `data/raw/scientific_papers_2m_metadata.json`
-- `data/eval/scientific_eval_questions.json`
-- `data/results/scientific_benchmark_results.json`
-- `data/results/scientific_accuracy_report.json`
-- `data/results/final_summary.json`
+```text
+data/raw/scientific_papers_2m.jsonl
+data/raw/scientific_papers_2m_metadata.json
+data/eval/scientific_eval_questions.json
+data/results/scientific_benchmark_results.json
+data/results/scientific_accuracy_report.json
+data/results/final_summary.json
+```
 
-The benchmark dashboard reads `final_summary.json` through the backend and displays LLM judge pass rate, BERTScore F1, token reduction, latency reduction, cost reduction, and winner badges.
+The generated benchmark used approximately 2,000,000 tokens and 40 grounded evaluation questions across factual, entity/method, multi-hop, and synthesis categories.
 
-### Production Deployment
+## Accuracy Evaluation
 
-See `DEPLOYMENT.md` for Vercel, Render, Docker Compose, optional TigerGraph, health checks, and environment-variable setup.
+Two complementary methods are used:
 
-NetworkX-only deployment is the recommended default:
+1. **LLM-as-a-Judge**
+   - Uses `huggingface_hub.InferenceClient`
+   - Default judge model: `meta-llama/Llama-3.1-8B-Instruct`
+   - Requires `HF_TOKEN`
+   - Returns `PASS` or `FAIL`
+
+2. **BERTScore**
+   - Uses `evaluate.load("bertscore")`
+   - Uses `rescale_with_baseline=True`
+   - Computes average F1 per pipeline
+
+Final accuracy report:
+
+```text
+data/results/scientific_accuracy_report.json
+```
+
+Merged dashboard summary:
+
+```text
+data/results/final_summary.json
+```
+
+## Deployment Overview
+
+Recommended free deployment:
+
+```text
+Frontend: Vercel
+Backend: Hugging Face Spaces Docker
+GraphRAG engine: NetworkX
+TigerGraph: disabled
+```
+
+Render's 512 MB tiers are too small for live GraphRAG queries because the backend loads ChromaDB, sentence-transformers/PyTorch, and the NetworkX graph. Use Hugging Face Spaces for a free live backend, or a paid Render/VPS instance with enough memory.
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for deeper deployment options.
+
+## Deploy Backend to Hugging Face Spaces
+
+Build a Space bundle:
+
+```powershell
+python scripts/prepare_hf_space.py
+```
+
+This writes:
+
+```text
+dist/hf-space
+```
+
+Create a Hugging Face Space:
+
+1. Go to Hugging Face Spaces.
+2. Create a new Space.
+3. Choose **Docker** SDK.
+4. Use CPU Basic hardware.
+5. Upload/push the contents of `dist/hf-space`.
+
+The easiest upload method is Git:
+
+```powershell
+git lfs install
+git clone https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE hf-space-upload
+Copy-Item -Recurse -Force .\dist\hf-space\* .\hf-space-upload\
+cd hf-space-upload
+git lfs track "*.bin"
+git lfs track "*.pkl"
+git lfs track "*.sqlite3"
+git lfs track "*.pickle"
+git add .
+git commit -m "Deploy GraphRAG benchmark backend"
+git push
+```
+
+If Git authentication fails:
+
+```powershell
+hf auth login --add-to-git-credential --force
+```
+
+Use a Hugging Face token with write permission.
+
+Space secrets:
+
+```text
+ENV=production
+OPENAI_API_KEY=
+HF_TOKEN=
+FRONTEND_URL=https://your-vercel-app.vercel.app
+BACKEND_URL=https://your-username-your-space.hf.space
+ADMIN_API_KEY=
+SESSION_SECRET=
+TIGERGRAPH_ENABLED=false
+```
+
+Test:
+
+```text
+https://your-username-your-space.hf.space/health
+https://your-username-your-space.hf.space/ready
+```
+
+## Deploy Frontend to Vercel
+
+1. Import the repo into Vercel.
+2. Set project root to:
+
+```text
+frontend
+```
+
+3. Set environment variable:
+
+```text
+NEXT_PUBLIC_API_URL=https://your-username-your-space.hf.space
+```
+
+4. Deploy.
+5. Open:
+
+```text
+https://your-vercel-app.vercel.app/benchmark
+```
+
+The frontend should load the benchmark summary from:
+
+```text
+GET /api/metrics/final-summary
+```
+
+and live queries from:
+
+```text
+POST /api/query
+```
+
+## Docker Compose Deployment
+
+NetworkX-only deployment:
 
 ```powershell
 copy .env.production.example .env.production
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-Optional TigerGraph deployment:
+Optional TigerGraph profile:
 
 ```powershell
 docker compose -f docker-compose.prod.yml --profile tigergraph up -d
 ```
 
-Use TigerGraph only when you explicitly want the optional enterprise connector.
+TigerGraph is optional. Use it only when explicitly testing the enterprise connector.
+
+## Backend Security
+
+Security features:
+
+- CORS restricted by `FRONTEND_URL` / `CORS_ORIGINS`
+- Admin bearer auth for upload/ingestion when `ADMIN_API_KEY` is set or `ENV=production`
+- Request size limit via `MAX_REQUEST_BYTES`
+- Simple in-process rate limiting
+- `/health` process check
+- `/ready` storage/config/readiness check
+- TigerGraph readiness skipped unless `TIGERGRAPH_ENABLED=true`
+
+Admin requests require:
+
+```text
+Authorization: Bearer <ADMIN_API_KEY>
+```
+
+Security checklist:
+
+```text
+SECURITY_CHECKLIST.md
+```
+
+## Deployment Validation
+
+With backend running:
+
+```powershell
+python scripts/validate_deployment.py
+```
+
+For a deployed backend:
+
+```powershell
+$env:BACKEND_URL="https://your-backend-url"
+python scripts/validate_deployment.py
+```
+
+Expected local success:
+
+```text
+TigerGraph validation skipped: TIGERGRAPH_ENABLED=false
+/health: {"status":"ok"}
+/ready: {"status":"ready", ...}
+Deployment validation passed.
+```
+
+## Backup and Restore
+
+Back up generated data:
+
+```sh
+scripts/backup_data.sh
+```
+
+Restore:
+
+```sh
+scripts/restore_data.sh path/to/backup.tar.gz
+```
+
+Backups exclude secrets.
+
+## Common Issues
+
+**CORS preflight fails**
+
+Set backend env:
+
+```text
+FRONTEND_URL=https://your-vercel-app.vercel.app
+CORS_ORIGINS=https://your-vercel-app.vercel.app
+```
+
+**Render runs out of memory**
+
+Use Hugging Face Spaces Docker for the free backend, or upgrade Render to a larger paid instance.
+
+**Space says README configuration is missing**
+
+The Space README must start with YAML front matter. The generated `dist/hf-space/README.md` already includes it.
+
+**Graph artifact missing**
+
+Run:
+
+```powershell
+python scripts/rebuild_indexes_from_2m_dataset.py
+```
+
+then rebuild the HF Space bundle:
+
+```powershell
+python scripts/prepare_hf_space.py
+```
+
+**Upload fails with 401 or 403**
+
+In production, upload/ingestion requires:
+
+```text
+Authorization: Bearer <ADMIN_API_KEY>
+```
+
+**TigerGraph errors**
+
+Keep:
+
+```text
+TIGERGRAPH_ENABLED=false
+```
+
+TigerGraph is not required for the benchmark.
+
+## Key Commands
+
+```powershell
+# local backend
+uvicorn backend.main:app --reload --port 8000
+
+# local frontend
+cd frontend
+npm.cmd run dev
+
+# full benchmark
+python scripts/build_2m_dataset.py
+python scripts/rebuild_indexes_from_2m_dataset.py
+python scripts/generate_eval_questions.py
+python scripts/run_full_benchmark.py
+python scripts/evaluate_accuracy.py
+python scripts/build_final_summary.py
+
+# HF Spaces bundle
+python scripts/prepare_hf_space.py
+
+# deployment validation
+python scripts/validate_deployment.py
+```
