@@ -18,6 +18,8 @@ The dashboard shows all three pipelines side-by-side and highlights winners for 
 
 ## Architecture
 
+![GraphRAG Benchmark Architecture](docs/assets/graphrag-benchmark-architecture.png)
+
 ```text
 Frontend dashboard (Next.js)
   -> Backend API (FastAPI)
@@ -191,6 +193,8 @@ Two complementary methods are used:
    - Default judge model: `meta-llama/Llama-3.1-8B-Instruct`
    - Requires `HF_TOKEN`
    - Returns `PASS` or `FAIL`
+   - Fails visibly if all judge calls are skipped; use `python scripts/evaluate_accuracy.py --allow-skip-judge` only when intentionally running BERTScore without hosted judge calls.
+   - To recompute only judge pass rates and reuse existing BERTScore values, run `python scripts/evaluate_accuracy.py --skip-bertscore`.
 
 2. **BERTScore**
    - Uses `evaluate.load("bertscore")`
