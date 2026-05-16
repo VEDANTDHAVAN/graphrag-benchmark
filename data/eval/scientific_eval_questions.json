@@ -1,0 +1,640 @@
+[
+  {
+    "question": "What is the main contribution or focus of the paper titled 'additive models @xcite provide an important family of models for semiparametric regression or classification . some reasons for the success '?",
+    "correct_answer": "additive models play an important role in semiparametric statistics .",
+    "expected_entities": [
+      "kernel",
+      "additive",
+      "models",
+      "gaussian"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00000"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'the leptonic decays of a charged pseudoscalar meson @xmath7 are processes of the type @xmath8 , where @xmath9 , @xmath10 , or @xmath11 . bec'?",
+    "correct_answer": "we have studied the leptonic decay @xmath0 , via the decay channel @xmath1 , using a sample of tagged @xmath2 decays collected near the @xmath3 peak production energy in @xmath4 collisions with the cleo - c detector .",
+    "expected_entities": [
+      "decay",
+      "leptonic",
+      "decays",
+      "where"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00001"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'the transport properties of nonlinear non - equilibrium dynamical systems are far from well - understood@xcite .'?",
+    "correct_answer": "in 84 , 258 ( 2000 ) , mateos conjectured that current reversal in a classical deterministic ratchet is associated with bifurcations from chaotic to periodic regimes .",
+    "expected_entities": [
+      "current",
+      "well",
+      "bifurcation",
+      "mateos"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00002"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'studies of laser beams propagating through turbulent atmospheres are important for many applications such as remote sensing , tracking , and'?",
+    "correct_answer": "the effect of a random phase diffuser on fluctuations of laser light ( scintillations ) is studied .",
+    "expected_entities": [
+      "phase",
+      "diffuser",
+      "laser",
+      "effect"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00003"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'the so - called `` nucleon spin crisis '' raised by the european muon collaboration ( emc ) measurement in 1988 is one of the most outstandi'?",
+    "correct_answer": "with a special intention of clarifying the underlying spin contents of the nucleon , we investigate the generalized form factors of the nucleon , which are defined as the @xmath0-th @xmath1-moments of the generalized parton distribution functions , within the framework of the chiral quark soliton model .",
+    "expected_entities": [
+      "pion",
+      "nucleon",
+      "called",
+      "spin"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00004"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'let @xmath1 . let @xmath2\\longrightarrow ['?",
+    "correct_answer": "we improve the currently known thresholds for basisness of the family of periodically dilated @xmath0-sine functions .",
+    "expected_entities": [
+      "family",
+      "xmath1",
+      "xmath2",
+      "longrightarrow"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00005"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'the simulations we discuss here allowed us to obtain spectra of the shg response .'?",
+    "correct_answer": "we report on strong enhancement of mid - infrared second harmonic generation ( shg ) from sic nanopillars due to the resonant excitation of localized surface phonon - polaritons within the reststrahlen band .",
+    "expected_entities": [
+      "sphp",
+      "xcite",
+      "monopole",
+      "mode"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00006"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'with significant research efforts being directed to the development of neurocomputers based on the functionalities of the brain , a seismic '?",
+    "correct_answer": "synaptic memory is considered to be the main element responsible for learning and cognition in humans .",
+    "expected_entities": [
+      "term",
+      "memory",
+      "long",
+      "synapses"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00007"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'the segmentation process as a whole can be thought of as consisting of two tasks : recognition and delineation .'?",
+    "correct_answer": "this paper investigates , using prior shape models and the concept of ball scale ( b - scale ) , ways of automatically recognizing objects in 3d images without performing elaborate searches or optimization .",
+    "expected_entities": [
+      "recognition",
+      "scale",
+      "model",
+      "image"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00008"
+    ]
+  },
+  {
+    "question": "What is the main contribution or focus of the paper titled 'one surprising result that has come out of the more than 200 extrasolar planet discoveries to date is the wide range of eccentricities obser'?",
+    "correct_answer": "long time coverage and high radial velocity precision have allowed for the discovery of additional objects in known planetary systems .",
+    "expected_entities": [
+      "systems",
+      "planets",
+      "additional",
+      "which"
+    ],
+    "difficulty": "easy",
+    "category": "factual",
+    "source_doc_ids": [
+      "arxiv_00009"
+    ]
+  },
+  {
+    "question": "In 'biological aggregations such as fish schools , bird flocks , bacterial colonies , and insect swarms @xcite have characteristic morphologies ', which methods, tasks, or concepts are most closely associated with solution?",
+    "correct_answer": "The paper associates solution with these grounded concepts: solution, swarm, mass, minimizer.",
+    "expected_entities": [
+      "solution",
+      "swarm",
+      "mass",
+      "minimizer",
+      "which"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00010"
+    ]
+  },
+  {
+    "question": "In 'studies of charm decays are pursued for several different reasons .', which methods, tasks, or concepts are most closely associated with cleo?",
+    "correct_answer": "The paper associates cleo with these grounded concepts: cleo, modes, phys, branching.",
+    "expected_entities": [
+      "cleo",
+      "modes",
+      "phys",
+      "branching",
+      "charm"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00011"
+    ]
+  },
+  {
+    "question": "In 'quantum - mechanical fluctuations during an early epoch of inflation provide a plausible mechanism to generate the energy - density perturba', which methods, tasks, or concepts are most closely associated with model?",
+    "correct_answer": "The paper associates model with these grounded concepts: model, open, bubble, inflation.",
+    "expected_entities": [
+      "model",
+      "open",
+      "bubble",
+      "inflation",
+      "data"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00012"
+    ]
+  },
+  {
+    "question": "In 'formation and bose - einstein condensation ( bec ) of molecules @xcite have recently been achieved based on ultracold atoms with magneticall', which methods, tasks, or concepts are most closely associated with channel?",
+    "correct_answer": "The paper associates channel with these grounded concepts: channel, feshbach, state, resonance.",
+    "expected_entities": [
+      "channel",
+      "feshbach",
+      "state",
+      "resonance",
+      "scattering"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00013"
+    ]
+  },
+  {
+    "question": "In 'the study of supernovae ( sne ) has greatly advanced in the last few years .', which methods, tasks, or concepts are most closely associated with type?",
+    "correct_answer": "The paper associates type with these grounded concepts: type, spectra, colors, redshift.",
+    "expected_entities": [
+      "type",
+      "spectra",
+      "colors",
+      "redshift",
+      "have"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00014"
+    ]
+  },
+  {
+    "question": "In 'the time varying stern - gerlach , sg , interaction of a relativistic fermion with an e.m .', which methods, tasks, or concepts are most closely associated with cavity?",
+    "correct_answer": "The paper associates cavity with these grounded concepts: cavity, field, spin, magnetic.",
+    "expected_entities": [
+      "cavity",
+      "field",
+      "spin",
+      "magnetic",
+      "over"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00015"
+    ]
+  },
+  {
+    "question": "In 'excitons in semiconductors have been the subject of many experimental and theoretical investigations of bose condensation .', which methods, tasks, or concepts are most closely associated with scattering?",
+    "correct_answer": "The paper associates scattering with these grounded concepts: scattering, exciton, states, energy.",
+    "expected_entities": [
+      "scattering",
+      "exciton",
+      "states",
+      "energy",
+      "excitons"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00016"
+    ]
+  },
+  {
+    "question": "In 'inflation generically predicts a primordial spectrum of density perturbations which is almost precisely gaussian @xcite . in recent years', which methods, tasks, or concepts are most closely associated with field?",
+    "correct_answer": "The paper associates field with these grounded concepts: field, which, xcite, evolution.",
+    "expected_entities": [
+      "field",
+      "which",
+      "xcite",
+      "evolution",
+      "equations"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00017"
+    ]
+  },
+  {
+    "question": "In 'for fixed integers @xmath0 and @xmath1 , we consider the admissible sequences of @xmath2 lattice paths in a colored @xmath3 square given in ', which methods, tasks, or concepts are most closely associated with paths?",
+    "correct_answer": "The paper associates paths with these grounded concepts: paths, admissible, number, sequences.",
+    "expected_entities": [
+      "paths",
+      "admissible",
+      "number",
+      "sequences",
+      "lattice"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00018"
+    ]
+  },
+  {
+    "question": "In 'the lep experiments at the resonance of @xmath1-boson have tested the standard model ( sm ) at quantum level , measuring the @xmath1-decay i', which methods, tasks, or concepts are most closely associated with xcite?",
+    "correct_answer": "The paper associates xcite with these grounded concepts: xcite, nmssm, higgs, type.",
+    "expected_entities": [
+      "xcite",
+      "nmssm",
+      "higgs",
+      "type",
+      "constraints"
+    ],
+    "difficulty": "medium",
+    "category": "entity",
+    "source_doc_ids": [
+      "arxiv_00019"
+    ]
+  },
+  {
+    "question": "How do the papers 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' and 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connect through galaxies?",
+    "correct_answer": "Both papers discuss galaxies. 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' frames it around dwarf, galaxies, local, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
+    "expected_entities": [
+      "dwarf",
+      "galaxies",
+      "search"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00021",
+      "arxiv_00023"
+    ]
+  },
+  {
+    "question": "How do the papers 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' and 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' frames it around acoustic, high, generation, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
+    "expected_entities": [
+      "galaxies",
+      "scientific modeling",
+      "search",
+      "high",
+      "acoustic"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00022",
+      "arxiv_00023"
+    ]
+  },
+  {
+    "question": "How do the papers 'invariants are a popular concept in object recognition and image retrieval  @xcite .' and 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'invariants are a popular concept in object recognition and image retrieval  @xcite .' frames it around invariants, presents, under, while 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connects it to loops, magnetic, flux.",
+    "expected_entities": [
+      "scientific modeling",
+      "invariants",
+      "loops",
+      "magnetic",
+      "presents"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00024",
+      "arxiv_00025"
+    ]
+  },
+  {
+    "question": "How do the papers 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' and 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' frames it around torsion, statefinder, diagnostic, while 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connects it to phenomenological, waveforms, waveform.",
+    "expected_entities": [
+      "waveforms",
+      "scientific modeling",
+      "torsion",
+      "statefinder",
+      "phenomenological"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00026",
+      "arxiv_00027"
+    ]
+  },
+  {
+    "question": "How do the papers 'in quantum information processing , information is stored and processed with a quantum system .' and 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'in quantum information processing , information is stored and processed with a quantum system .' frames it around qubits, quantum, error, while 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connects it to model, kinematics, dimming.",
+    "expected_entities": [
+      "qubits",
+      "scientific modeling",
+      "quantum",
+      "model",
+      "kinematics"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00028",
+      "arxiv_00029"
+    ]
+  },
+  {
+    "question": "How do the papers 'it is well known that the classical magnetoresistance ( mr ) in metals or semiconductors with a closed free electron fermi surface increases' and 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'it is well known that the classical magnetoresistance ( mr ) in metals or semiconductors with a closed free electron fermi surface increases' frames it around linear, positive, magnetoresistance, while 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' connects it to dwarf, galaxies, local.",
+    "expected_entities": [
+      "linear",
+      "galaxies",
+      "scientific modeling",
+      "positive",
+      "dwarf"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00020",
+      "arxiv_00021"
+    ]
+  },
+  {
+    "question": "How do the papers 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' and 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' frames it around acoustic, high, generation, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
+    "expected_entities": [
+      "galaxies",
+      "scientific modeling",
+      "search",
+      "high",
+      "acoustic"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00022",
+      "arxiv_00023"
+    ]
+  },
+  {
+    "question": "How do the papers 'invariants are a popular concept in object recognition and image retrieval  @xcite .' and 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'invariants are a popular concept in object recognition and image retrieval  @xcite .' frames it around invariants, presents, under, while 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connects it to loops, magnetic, flux.",
+    "expected_entities": [
+      "scientific modeling",
+      "invariants",
+      "loops",
+      "magnetic",
+      "presents"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00024",
+      "arxiv_00025"
+    ]
+  },
+  {
+    "question": "How do the papers 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' and 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' frames it around torsion, statefinder, diagnostic, while 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connects it to phenomenological, waveforms, waveform.",
+    "expected_entities": [
+      "waveforms",
+      "scientific modeling",
+      "torsion",
+      "statefinder",
+      "phenomenological"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00026",
+      "arxiv_00027"
+    ]
+  },
+  {
+    "question": "How do the papers 'in quantum information processing , information is stored and processed with a quantum system .' and 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connect through scientific modeling?",
+    "correct_answer": "Both papers discuss scientific modeling. 'in quantum information processing , information is stored and processed with a quantum system .' frames it around qubits, quantum, error, while 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connects it to model, kinematics, dimming.",
+    "expected_entities": [
+      "qubits",
+      "scientific modeling",
+      "quantum",
+      "model",
+      "kinematics"
+    ],
+    "difficulty": "hard",
+    "category": "multihop",
+    "source_doc_ids": [
+      "arxiv_00028",
+      "arxiv_00029"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'one of the fundamental problems in the classification of complex surfaces is to find a new family of complex surfaces of general type with @'.",
+    "correct_answer": "A concise synthesis of 'one of the fundamental problems in the classification of complex surfaces is to find a new family of complex surfaces of general type with @' is that it studies surface, theorem, surfaces and supports that focus with the abstract claim: we construct a simply connected minimal complex surface of general type with @xmath0 and @xmath1 which has an involution such that the minimal resolution of the quotient by the involution is a simply connected minimal complex surface of general type with @xmath0 and @xmath2 .",
+    "expected_entities": [
+      "surface",
+      "theorem",
+      "surfaces",
+      "four",
+      "points"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00030"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'supersymmetry ( susy ) is one of the most attractive extensions of the standard model .'.",
+    "correct_answer": "A concise synthesis of 'supersymmetry ( susy ) is one of the most attractive extensions of the standard model .' is that it studies mass, scale, case and supports that focus with the abstract claim: no - scale structure of the khler potential is obtained in many types of supersymmetric models .",
+    "expected_entities": [
+      "mass",
+      "scale",
+      "case",
+      "higgs",
+      "region"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00031"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'the origin - destination ( od ) matrix is important in transportation analysis .'.",
+    "correct_answer": "A concise synthesis of 'the origin - destination ( od ) matrix is important in transportation analysis .' is that it studies matrix, estimation, have and supports that focus with the abstract claim: the estimation of the number of passengers with the identical journey is a common problem for public transport authorities .",
+    "expected_entities": [
+      "matrix",
+      "estimation",
+      "have",
+      "then",
+      "passengers"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00032"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'high q cavities such as whispering gallery mode ( wgm ) cavities have recently demonstrated quality factors ( @xmath0 ) as high as @xmath3 a'.",
+    "correct_answer": "A concise synthesis of 'high q cavities such as whispering gallery mode ( wgm ) cavities have recently demonstrated quality factors ( @xmath0 ) as high as @xmath3 a' is that it studies cavity, squeezed, frequency and supports that focus with the abstract claim: we propose and experimentally demonstrate a method for non - invasive measurements of cavity parameters by injection of squeezed vacuum into an optical cavity .",
+    "expected_entities": [
+      "cavity",
+      "squeezed",
+      "frequency",
+      "field",
+      "vacuum"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00033"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'to enhance chemical reactivity of cu surfaces with nitrogen oxides ( no@xmath0 ) is an important issue for development of new catalytic mate'.",
+    "correct_answer": "A concise synthesis of 'to enhance chemical reactivity of cu surfaces with nitrogen oxides ( no@xmath0 ) is an important issue for development of new catalytic mate' is that it studies structure, adsorption, energy and supports that focus with the abstract claim: to investigate chemical reactivity of cu atomic - scale structures , we performed simulations based on the generalized gradient approximation in the density functional theory .",
+    "expected_entities": [
+      "structure",
+      "adsorption",
+      "energy",
+      "atomic",
+      "structures"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00034"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'there are reasons to believe that cosmic rays ( crs ) around the ankle at @xmath0 gev are dominated by extragalactic protons  @xcite .'.",
+    "correct_answer": "A concise synthesis of 'there are reasons to believe that cosmic rays ( crs ) around the ankle at @xmath0 gev are dominated by extragalactic protons  @xcite .' is that it studies xcite, neutrinos, agasa and supports that focus with the abstract claim: the origin and chemical composition of ultra high energy cosmic rays is still an open question in astroparticle physics .",
+    "expected_entities": [
+      "xcite",
+      "neutrinos",
+      "agasa",
+      "extragalactic",
+      "sources"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00035"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'a multistable system is one that possesses a large number of coexisting attractors for a fixed set of parameters .'.",
+    "correct_answer": "A concise synthesis of 'a multistable system is one that possesses a large number of coexisting attractors for a fixed set of parameters .' is that it studies orbit, orbits, period and supports that focus with the abstract claim: the phenomenology of a system of two coupled quadratic maps is studied both analytically and numerically .",
+    "expected_entities": [
+      "orbit",
+      "orbits",
+      "period",
+      "xcite",
+      "bifurcation"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00036"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'in solid - core photonic crystal fibers ( pcf ) the air - silica microstructured cladding ( see fig .  [ fig1 ] ) gives rise to a variety of'.",
+    "correct_answer": "A concise synthesis of 'in solid - core photonic crystal fibers ( pcf ) the air - silica microstructured cladding ( see fig .  [ fig1 ] ) gives rise to a variety of' is that it studies xcite, bending, fibers and supports that focus with the abstract claim: we report on an easy - to - evaluate expression for the prediction of the bend - loss for a large mode area photonic crystal fiber ( pcf ) with a triangular air - hole lattice .",
+    "expected_entities": [
+      "xcite",
+      "bending",
+      "fibers",
+      "photonic",
+      "crystal"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00037"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'among the great variety of the works devoted to random motions at finite speed in the euclidean spaces @xmath8 ( see @xcite , @xcite , @xcit'.",
+    "correct_answer": "A concise synthesis of 'among the great variety of the works devoted to random motions at finite speed in the euclidean spaces @xmath8 ( see @xcite , @xcite , @xcit' is that it studies vert, frac, formula and supports that focus with the abstract claim: we consider the markov random flight @xmath0 in the three - dimensional euclidean space @xmath1 with constant finite speed @xmath2 and the uniform choice of the initial and each new direction at random time instants that form a homogeneous poisson flow of rate @xmath3 .",
+    "expected_entities": [
+      "vert",
+      "frac",
+      "formula",
+      "boldsymbol",
+      "alpha"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00038"
+    ]
+  },
+  {
+    "question": "Synthesize the research problem, approach, and likely significance of 'multiscale dynamics is present in many phenomena , e.g. , turbulence @xcite , finance @xcite , geosciences @xcite , etc , to quote a few'.",
+    "correct_answer": "A concise synthesis of 'multiscale dynamics is present in many phenomena , e.g. , turbulence @xcite , finance @xcite , geosciences @xcite , etc , to quote a few' is that it studies range, scaling, scale and supports that focus with the abstract claim: the classical structure - function ( sf ) method in fully developed turbulence or for scaling processes in general is influenced by large - scale energetic structures , known as infrared effect .",
+    "expected_entities": [
+      "range",
+      "scaling",
+      "scale",
+      "large",
+      "xcite"
+    ],
+    "difficulty": "hard",
+    "category": "synthesis",
+    "source_doc_ids": [
+      "arxiv_00039"
+    ]
+  }
+]

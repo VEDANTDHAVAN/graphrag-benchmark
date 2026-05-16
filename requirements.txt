@@ -3,6 +3,8 @@ uvicorn
 python-multipart
 python-dotenv
 
+datasets
+pyarrow
 sentence-transformers
 faiss-cpu
 numpy
@@ -11,6 +13,8 @@ requests
 networkx
 chromadb
 
+evaluate
+huggingface_hub
 bert-score
 scikit-learn
 

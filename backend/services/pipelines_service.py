@@ -1,5 +1,34 @@
+import json
+import os
 from importlib import import_module
+from pathlib import Path
 from typing import Callable, Dict
+
+
+GROUND_TRUTH_PATH = Path("evaluation/ground_truth.json")
+
+
+def _load_reference_answer(question: str) -> str:
+    if not GROUND_TRUTH_PATH.exists():
+        return ""
+
+    try:
+        data = json.loads(GROUND_TRUTH_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return ""
+
+    if isinstance(data, dict):
+        return data.get(question, "")
+
+    if isinstance(data, list):
+        for row in data:
+            if not isinstance(row, dict):
+                continue
+            row_question = row.get("question", row.get("query", ""))
+            if row_question == question:
+                return row.get("correct_answer", row.get("answer", ""))
+
+    return ""
 
 
 def _safe_run(name: str, runner: Callable[[str], Dict], question: str) -> Dict:
@@ -43,7 +72,7 @@ def run_all_pipelines(question: str) -> Dict:
     Lazily import pipelines so the API can boot even when optional runtime
     dependencies, model files, or external services are not ready yet.
     """
-    return {
+    response = {
         "query": question,
         "pipelines": {
             "llm_only": _run_pipeline(
@@ -66,3 +95,18 @@ def run_all_pipelines(question: str) -> Dict:
             ),
         },
     }
+
+    if os.getenv("ENABLE_LIVE_ACCURACY", "").lower() in {"1", "true", "yes"}:
+        correct_answer = _load_reference_answer(question)
+        if correct_answer:
+            from evaluation.evaluator import evaluate_single_answer
+
+            for result in response["pipelines"].values():
+                if result.get("status") == "success":
+                    result["accuracy"] = evaluate_single_answer(
+                        question,
+                        correct_answer,
+                        result.get("answer", ""),
+                    )
+
+    return response

@@ -1,10 +1,12 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
+from backend.security import AdminDependency
+
 router = APIRouter()
 
 
 @router.post("/upload")
-async def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...), _: None = AdminDependency):
     allowed = (".pdf", ".txt", ".csv")
     if not any(file.filename.lower().endswith(ext) for ext in allowed):
         raise HTTPException(status_code=400, detail="Only PDF, TXT, CSV supported")
@@ -22,7 +24,7 @@ async def upload_file(file: UploadFile = File(...)):
             status_code=500,
             detail={
                 "stage": "ingestion",
-                "message": str(exc),
+                "message": "Ingestion failed",
             },
         ) from exc
 

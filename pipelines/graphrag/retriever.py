@@ -28,6 +28,20 @@ def extract_query_entities(query: str) -> List[str]:
     return tokens
 
 
+def _rank_chunks(query: str, chunks: List[Dict], limit: int) -> List[Dict]:
+    tokens = [t for t in normalize_text(query).split(" ") if len(t) >= 3 and t not in STOPWORDS]
+    if not tokens:
+        return chunks[:limit]
+
+    def score(chunk: Dict) -> tuple[int, int]:
+        text = normalize_text(chunk.get("text", ""))
+        overlap = sum(1 for token in tokens if token in text)
+        phrase_bonus = 3 if normalize_text(query)[:80] in text else 0
+        return overlap + phrase_bonus, len(text)
+
+    return sorted(chunks, key=score, reverse=True)[:limit]
+
+
 def retrieve_graph_context(
     query: str,
     k: int = 8,
@@ -47,7 +61,8 @@ def retrieve_graph_context(
     matched_entities = client.search_entities(query_entities)
 
     if matched_entities:
-        chunks = client.get_neighbor_chunks(matched_entities, hops=hops, max_chunks=k)
+        candidates = client.get_neighbor_chunks(matched_entities, hops=hops, max_chunks=max(k * 8, 32))
+        chunks = _rank_chunks(query, candidates, k)
         reasoning_paths = client.get_reasoning_paths(matched_entities, max_paths=5)
         return {
             "query_entities": query_entities,
@@ -58,7 +73,8 @@ def retrieve_graph_context(
         }
 
     # Fallback: keyword search over entity labels + chunk text.
-    fallback_entities, fallback_chunks = client.keyword_fallback(query, max_chunks=k)
+    fallback_entities, fallback_candidates = client.keyword_fallback(query, max_chunks=max(k * 8, 32))
+    fallback_chunks = _rank_chunks(query, fallback_candidates, k)
     reasoning_paths = client.get_reasoning_paths(fallback_entities, max_paths=5) if fallback_entities else []
 
     diagnostics["fallback"] = "keyword"
@@ -70,4 +86,3 @@ def retrieve_graph_context(
         "reasoning_paths": reasoning_paths,
         "diagnostics": diagnostics,
     }
-

@@ -1,0 +1,32 @@
+{
+  "llm_only": {
+    "avg_total_tokens": 367.9,
+    "avg_latency_seconds": 4.9918764412403105,
+    "avg_estimated_cost": 0.0007358,
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": -0.08030490805722365,
+    "token_reduction_vs_llm_only": 0.0,
+    "latency_reduction_vs_llm_only": 0.0,
+    "cost_reduction_vs_llm_only": 0.0
+  },
+  "basic_rag": {
+    "avg_total_tokens": 746.825,
+    "avg_latency_seconds": 2.4687310993671416,
+    "avg_estimated_cost": 0.0014936500000000002,
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": 0.08752221380709671,
+    "token_reduction_vs_llm_only": -102.99673824408808,
+    "latency_reduction_vs_llm_only": 50.54502793835686,
+    "cost_reduction_vs_llm_only": -102.9967382440881
+  },
+  "graphrag": {
+    "avg_total_tokens": 415.0,
+    "avg_latency_seconds": 1.74778111577034,
+    "avg_estimated_cost": 0.0008299999999999998,
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": 0.11030448044766672,
+    "token_reduction_vs_llm_only": -12.802391954335423,
+    "latency_reduction_vs_llm_only": 64.98749245211533,
+    "cost_reduction_vs_llm_only": -12.802391954335391
+  }
+}

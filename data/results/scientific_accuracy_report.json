@@ -1,0 +1,17 @@
+{
+  "llm_only": {
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": -0.08030490805722365,
+    "num_questions": 40
+  },
+  "basic_rag": {
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": 0.08752221380709671,
+    "num_questions": 40
+  },
+  "graphrag": {
+    "llm_judge_pass_rate": null,
+    "bertscore_f1": 0.11030448044766672,
+    "num_questions": 40
+  }
+}

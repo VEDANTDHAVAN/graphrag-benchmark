@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Optional
 import chromadb
 
 from pipelines.basic_rag.embedding import embed_text
+from utils.paths import chroma_path
 
-CHROMA_DIR = "data/chroma"
 COLLECTION_NAME = "chunks"
 
 
@@ -23,8 +23,9 @@ class VectorStore:
     """
 
     def __init__(self):
-        os.makedirs(CHROMA_DIR, exist_ok=True)
-        self.client = chromadb.PersistentClient(path=CHROMA_DIR)
+        chroma_dir = chroma_path()
+        os.makedirs(chroma_dir, exist_ok=True)
+        self.client = chromadb.PersistentClient(path=chroma_dir)
         self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
 
     @classmethod
@@ -90,4 +91,3 @@ class VectorStore:
     # Back-compat helpers (old FAISS codepaths)
     def search_text(self, query: str, k: int = 5):
         return self.search(query, k=k)
-

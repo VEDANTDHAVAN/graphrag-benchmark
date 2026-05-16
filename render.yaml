@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: graphrag-benchmark-backend
+    runtime: docker
+    plan: starter
+    dockerfilePath: backend/Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: CHROMA_PATH
+        value: /data/chroma
+      - key: GRAPH_PATH
+        value: /data/graph/graphrag_graph.pkl
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: TIGERGRAPH_ENABLED
+        value: false
+      - key: MAX_REQUEST_BYTES
+        value: 26214400
+      - key: RATE_LIMIT_REQUESTS
+        value: 120
+      - key: RATE_LIMIT_WINDOW_SECONDS
+        value: 60
+      # Set secrets and deployed URLs in Render dashboard, not in git:
+      # OPENAI_API_KEY, HF_TOKEN, FRONTEND_URL, BACKEND_URL, ADMIN_API_KEY, SESSION_SECRET
+    healthCheckPath: /health
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 5

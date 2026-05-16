@@ -1,0 +1,17 @@
+.git
+venv
+__pycache__
+*.pyc
+.env
+.env.*
+!.env.example
+!.env.production.example
+frontend/node_modules
+frontend/.next
+data/raw/*
+data/processed/*
+data/embeddings/*
+data/results/*
+data/chroma/*
+data/graph/*
+services/graphrag

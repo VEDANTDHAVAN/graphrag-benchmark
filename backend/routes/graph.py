@@ -2,14 +2,15 @@ from fastapi import APIRouter
 import pickle
 import os
 
-router = APIRouter(prefix="/api/graph", tags=["graph"])
+from utils.paths import graph_path
 
-GRAPH_PATH = "data/graph/graphrag_graph.pkl"
+router = APIRouter(prefix="/api/graph", tags=["graph"])
 
 
 @router.get("/view")
 def get_graph_view(limit: int = 200):
-    if not os.path.exists(GRAPH_PATH):
+    graph_file = graph_path()
+    if not os.path.exists(graph_file):
         return {
             "status": "error",
             "message": "Graph file not found",
@@ -17,7 +18,7 @@ def get_graph_view(limit: int = 200):
             "edges": []
         }
 
-    with open(GRAPH_PATH, "rb") as f:
+    with open(graph_file, "rb") as f:
         graph = pickle.load(f)
 
     nodes = []

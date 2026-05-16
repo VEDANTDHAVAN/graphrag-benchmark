@@ -1,10 +1,13 @@
 import uuid
+import os
+from pathlib import Path
 
 from ingestion.preprocess import extract_text_from_file
 from ingestion.chunk_data import chunk_text
 from ingestion.build_embeddings import add_to_vector_store
 from ingestion.entity_extraction import extract_entities
 from ingestion.build_graph import build_graph
+from utils.paths import upload_dir
 
 
 async def ingest_document(file_name: str, file_bytes: bytes):
@@ -15,6 +18,18 @@ async def ingest_document(file_name: str, file_bytes: bytes):
     """
 
     doc_id = str(uuid.uuid4())
+
+    # Persist raw uploads (useful for debugging / re-processing). This does not affect pipeline outputs.
+    try:
+        up_dir = upload_dir()
+        os.makedirs(up_dir, exist_ok=True)
+        safe_name = Path(file_name).name.replace("\\", "_").replace("/", "_")
+        raw_path = os.path.join(up_dir, f"{doc_id}__{safe_name}")
+        with open(raw_path, "wb") as f:
+            f.write(file_bytes)
+    except Exception:
+        # Non-fatal: ingestion should still proceed.
+        pass
 
     # -------------------------
     # 1. PREPROCESS

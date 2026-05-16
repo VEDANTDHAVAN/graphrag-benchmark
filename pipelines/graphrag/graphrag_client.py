@@ -8,8 +8,7 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 import networkx as nx
 
 
-GRAPH_DIR = "data/graph"
-GRAPH_PATH = os.path.join(GRAPH_DIR, "graphrag_graph.pkl")
+from utils.paths import graph_path as get_graph_path
 
 
 def normalize_text(text: str) -> str:
@@ -41,8 +40,8 @@ class GraphStats:
 
 
 class NetworkXGraphClient:
-    def __init__(self, graph_path: str = GRAPH_PATH):
-        self.graph_path = graph_path
+    def __init__(self, graph_path: Optional[str] = None):
+        self.graph_path = graph_path or get_graph_path()
         self.graph: nx.MultiDiGraph = nx.MultiDiGraph()
 
     def load_graph(self) -> nx.MultiDiGraph:
@@ -287,4 +286,3 @@ def get_connection() -> NetworkXGraphClient:
     client = NetworkXGraphClient()
     client.load_graph()
     return client
-

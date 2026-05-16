@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/Card";
 
@@ -12,6 +12,11 @@ type PipelineResult = {
   context?: string;
   tokens?: number;
   latency?: number;
+  accuracy?: {
+    llm_judge?: string;
+    llm_judge_pass?: boolean;
+    bertscore_f1?: number | null;
+  };
   error?: string;
   details?: any;
 };
@@ -21,22 +26,60 @@ type QueryResponse = {
   pipelines: Record<PipelineId, PipelineResult>;
 };
 
+type SummaryMetrics = {
+  avg_total_tokens?: number | null;
+  avg_latency_seconds?: number | null;
+  avg_estimated_cost?: number | null;
+  llm_judge_pass_rate?: number | null;
+  bertscore_f1?: number | null;
+  token_reduction_vs_llm_only?: number | null;
+  latency_reduction_vs_llm_only?: number | null;
+  cost_reduction_vs_llm_only?: number | null;
+};
+
+type FinalSummaryResponse = {
+  status: string;
+  summary: Partial<Record<PipelineId, SummaryMetrics>>;
+};
+
 const PIPELINES: Array<{ id: PipelineId; label: string; accent: string }> = [
   { id: "llm_only", label: "LLM Only", accent: "border-slate-400" },
   { id: "basic_rag", label: "Basic RAG", accent: "border-emerald-500" },
   { id: "graphrag", label: "GraphRAG", accent: "border-amber-500" },
 ];
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 function formatDelta(n: number) {
   const sign = n > 0 ? "+" : "";
   return `${sign}${n.toFixed(2)}`;
 }
 
+function formatNumber(value?: number | null, digits = 2) {
+  return typeof value === "number" ? value.toFixed(digits) : "N/A";
+}
+
+function formatPercent(value?: number | null, digits = 1) {
+  return typeof value === "number" ? `${value.toFixed(digits)}%` : "N/A";
+}
+
+function formatRate(value?: number | null) {
+  return typeof value === "number" ? formatPercent(value * 100) : "N/A";
+}
+
 export default function BenchmarkPage() {
   const [query, setQuery] = useState("What does RAG-HAT do for hallucination in RAG?");
   const [result, setResult] = useState<QueryResponse | null>(null);
+  const [summary, setSummary] = useState<FinalSummaryResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/metrics/final-summary`)
+      .then((response) => response.json())
+      .then((data) => setSummary(data))
+      .catch(() => setSummary({ status: "missing", summary: {} }));
+  }, []);
 
   const comparison = useMemo(() => {
     const basic = result?.pipelines.basic_rag;
@@ -66,7 +109,7 @@ export default function BenchmarkPage() {
     setResult(null);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/query`, {
+      const response = await fetch(`${API_URL}/api/query`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: trimmed, run_all: true }),
@@ -85,6 +128,15 @@ export default function BenchmarkPage() {
   };
 
   const graphragDetails = result?.pipelines.graphrag?.details;
+  const summaryData = summary?.summary ?? {};
+  const summaryValues = PIPELINES.map((pipeline) => ({
+    ...pipeline,
+    metrics: summaryData[pipeline.id],
+  }));
+  const accuracyWinner = bestPipeline(summaryData, "llm_judge_pass_rate", "max");
+  const lowestToken = bestPipeline(summaryData, "avg_total_tokens", "min");
+  const fastest = bestPipeline(summaryData, "avg_latency_seconds", "min");
+  const bestOverall = bestOverallPipeline(summaryData);
 
   return (
     <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-6 py-8">
@@ -94,6 +146,68 @@ export default function BenchmarkPage() {
           Compare LLM-only, Basic RAG (ChromaDB), and GraphRAG (NetworkX).
         </p>
       </header>
+
+      <Card>
+        <CardHeader>
+          <div>
+            <CardTitle>Final Benchmark Summary</CardTitle>
+            <CardDescription>
+              Accuracy, efficiency, and cost from the 2M-token scientific benchmark.
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {summary?.status !== "ok" ? (
+            <p className="text-sm text-[var(--text-secondary)]">
+              Run the full benchmark workflow to populate final_summary.json.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-left text-sm">
+                <thead className="border-b border-[var(--border)] text-xs uppercase tracking-wide text-[var(--text-secondary)]">
+                  <tr>
+                    <th className="py-2 pr-3">Pipeline</th>
+                    <th className="px-3 py-2">Badges</th>
+                    <th className="px-3 py-2">LLM Judge</th>
+                    <th className="px-3 py-2">BERTScore F1</th>
+                    <th className="px-3 py-2">Avg Tokens</th>
+                    <th className="px-3 py-2">Avg Latency</th>
+                    <th className="px-3 py-2">Avg Cost</th>
+                    <th className="px-3 py-2">Token Reduction</th>
+                    <th className="px-3 py-2">Latency Reduction</th>
+                    <th className="px-3 py-2">Cost Reduction</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {summaryValues.map((item) => (
+                    <tr key={item.id} className="border-b border-[var(--border)] last:border-0">
+                      <td className="py-3 pr-3 font-semibold text-[var(--text-primary)]">
+                        {item.label}
+                      </td>
+                      <td className="px-3 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {accuracyWinner === item.id && <Badge>Accuracy Winner</Badge>}
+                          {lowestToken === item.id && <Badge>Lowest Token Usage</Badge>}
+                          {fastest === item.id && <Badge>Fastest Pipeline</Badge>}
+                          {bestOverall === item.id && <Badge>Best Overall</Badge>}
+                        </div>
+                      </td>
+                      <td className="px-3 py-3">{formatRate(item.metrics?.llm_judge_pass_rate)}</td>
+                      <td className="px-3 py-3">{formatNumber(item.metrics?.bertscore_f1, 3)}</td>
+                      <td className="px-3 py-3">{formatNumber(item.metrics?.avg_total_tokens, 0)}</td>
+                      <td className="px-3 py-3">{formatNumber(item.metrics?.avg_latency_seconds)}s</td>
+                      <td className="px-3 py-3">${formatNumber(item.metrics?.avg_estimated_cost, 4)}</td>
+                      <td className="px-3 py-3">{formatPercent(item.metrics?.token_reduction_vs_llm_only)}</td>
+                      <td className="px-3 py-3">{formatPercent(item.metrics?.latency_reduction_vs_llm_only)}</td>
+                      <td className="px-3 py-3">{formatPercent(item.metrics?.cost_reduction_vs_llm_only)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -200,6 +314,29 @@ export default function BenchmarkPage() {
                     </p>
                   </section>
 
+                  {item.accuracy && (
+                    <section className="grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                          LLM Judge
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
+                          {item.accuracy.llm_judge ?? "SKIP"}
+                        </div>
+                      </div>
+                      <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                          BERTScore F1
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">
+                          {typeof item.accuracy.bertscore_f1 === "number"
+                            ? item.accuracy.bertscore_f1.toFixed(3)
+                            : "SKIP"}
+                        </div>
+                      </div>
+                    </section>
+                  )}
+
                   <details className="rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 py-2" open={pipeline.id !== "llm_only"}>
                     <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
                       Context Used
@@ -266,3 +403,43 @@ export default function BenchmarkPage() {
   );
 }
 
+function Badge({ children }: { children: ReactNode }) {
+  return (
+    <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200">
+      {children}
+    </span>
+  );
+}
+
+function bestPipeline(
+  summary: Partial<Record<PipelineId, SummaryMetrics>>,
+  key: keyof SummaryMetrics,
+  mode: "min" | "max"
+) {
+  const candidates = PIPELINES.map((pipeline) => ({
+    id: pipeline.id,
+    value: summary[pipeline.id]?.[key],
+  })).filter((item): item is { id: PipelineId; value: number } => typeof item.value === "number");
+
+  if (!candidates.length) return null;
+  candidates.sort((a, b) => (mode === "min" ? a.value - b.value : b.value - a.value));
+  return candidates[0].id;
+}
+
+function bestOverallPipeline(summary: Partial<Record<PipelineId, SummaryMetrics>>) {
+  const scores = PIPELINES.map((pipeline) => {
+    const metrics = summary[pipeline.id];
+    if (!metrics) return { id: pipeline.id, score: -Infinity };
+    const accuracy = (metrics.llm_judge_pass_rate ?? 0) * 100;
+    const bert = (metrics.bertscore_f1 ?? 0) * 100;
+    const tokens = metrics.token_reduction_vs_llm_only ?? 0;
+    const latency = metrics.latency_reduction_vs_llm_only ?? 0;
+    const cost = metrics.cost_reduction_vs_llm_only ?? 0;
+    return {
+      id: pipeline.id,
+      score: accuracy * 0.35 + bert * 0.25 + tokens * 0.15 + latency * 0.1 + cost * 0.15,
+    };
+  });
+  scores.sort((a, b) => b.score - a.score);
+  return scores[0]?.score === -Infinity ? null : scores[0]?.id;
+}
