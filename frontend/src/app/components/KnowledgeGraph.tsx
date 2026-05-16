@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import CytoscapeComponent from "react-cytoscapejs";
 import { Button } from "./ui/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/Card";
+import { API_URL } from "../lib/showcase";
 
 type GraphResponse = {
     status: string;
@@ -21,16 +22,28 @@ export default function KnowledgeGraph() {
     const [elements, setElements] = useState<any[]>([]);
     const [stats, setStats] = useState<GraphResponse["stats"] | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const loadGraph = async () => {
         setLoading(true);
+        setError(null);
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/graph/view?limit=200`);
+            const res = await fetch(`${API_URL}/api/graph/view?limit=200`);
+            if (!res.ok) {
+                throw new Error(`Graph request failed with ${res.status}`);
+            }
             const data: GraphResponse = await res.json();
+            if (data.status !== "success") {
+                throw new Error(data.status || "Graph unavailable");
+            }
 
             setElements([...data.nodes, ...data.edges]);
             setStats(data.stats || null);
+        } catch (err) {
+            setElements([]);
+            setStats(null);
+            setError(err instanceof Error ? err.message : "Failed to load graph");
         } finally {
             setLoading(false);
         }
@@ -57,6 +70,11 @@ export default function KnowledgeGraph() {
             </CardHeader>
 
             <CardContent>
+                {error && (
+                    <div className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+                        {error}. Check that <span className="font-mono">NEXT_PUBLIC_API_URL</span> points to the deployed backend and that CORS allows this frontend.
+                    </div>
+                )}
                 <div className="h-[600px] overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--background)]">
                     <CytoscapeComponent
                         elements={elements}
