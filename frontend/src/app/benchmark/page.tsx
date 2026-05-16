@@ -50,6 +50,14 @@ const PIPELINES: Array<{ id: PipelineId; label: string; accent: string }> = [
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+const SHOWCASE_QUERIES = [
+  "How do random phase diffusers affect scintillations of laser light in turbulent atmospheres?",
+  "What role do additive models play in semiparametric regression or classification?",
+  "How do variable stars help determine distance and star formation history in nearby dwarf galaxies?",
+  "How are hydrodynamic radiation, pulsed proton beams, laser beams, and water targets connected?",
+  "How are localized surface phonon polaritons connected to mid-infrared second harmonic generation in SiC nanopillars?",
+];
+
 function formatDelta(n: number) {
   const sign = n > 0 ? "+" : "";
   return `${sign}${n.toFixed(2)}`;
@@ -128,6 +136,7 @@ export default function BenchmarkPage() {
   };
 
   const graphragDetails = result?.pipelines.graphrag?.details;
+  const graphragTrace = graphragDetails?.retrieval_trace;
   const summaryData = summary?.summary ?? {};
   const summaryValues = PIPELINES.map((pipeline) => ({
     ...pipeline,
@@ -218,6 +227,23 @@ export default function BenchmarkPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950">
+              <div className="text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-200">
+                GraphRAG showcase queries
+              </div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {SHOWCASE_QUERIES.map((item, index) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setQuery(item)}
+                    className="rounded-md border border-blue-200 bg-white px-2.5 py-1.5 text-left text-xs font-semibold text-blue-700 transition-colors hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-100 dark:hover:bg-blue-900"
+                  >
+                    {index + 1}. {item}
+                  </button>
+                ))}
+              </div>
+            </div>
             <textarea
               value={query}
               onChange={(event) => setQuery(event.target.value)}
@@ -356,44 +382,62 @@ export default function BenchmarkPage() {
         <CardHeader>
           <div>
             <CardTitle>GraphRAG Details</CardTitle>
-            <CardDescription>Matched entities, reasoning paths, and selected chunks.</CardDescription>
+            <CardDescription>Hybrid retrieval trace, graph expansion, and selected chunks.</CardDescription>
           </div>
         </CardHeader>
         <CardContent>
           {!graphragDetails ? (
             <p className="text-sm text-[var(--text-secondary)]">Run a query to see graph details.</p>
           ) : (
-            <div className="grid gap-3 lg:grid-cols-3">
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Matched Entities
+            <div className="flex flex-col gap-3">
+              {graphragTrace?.fallback_used && (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-100">
+                  Graph expansion was attempted, but semantic fallback was used for reliability.
                 </div>
-                <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
-                  {JSON.stringify(graphragDetails.matched_entities ?? [], null, 2)}
-                </pre>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
+                <TraceMetric label="Mode" value={graphragTrace?.mode === "hybrid_graphrag" ? "Hybrid GraphRAG" : "GraphRAG"} />
+                <TraceMetric label="Seed chunks" value={graphragTrace?.seed_count ?? 0} />
+                <TraceMetric label="Expanded nodes" value={graphragTrace?.expanded_node_count ?? 0} />
+                <TraceMetric label="Expanded edges" value={graphragTrace?.expanded_edge_count ?? 0} />
+                <TraceMetric label="Reranked candidates" value={graphragTrace?.reranked_candidate_count ?? 0} />
+                <TraceMetric label="Fallback used" value={graphragTrace?.fallback_used ? "Yes" : "No"} />
               </div>
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Reasoning Paths
+              <div className="grid gap-3 lg:grid-cols-3">
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                    Seed Chunk IDs
+                  </div>
+                  <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
+                    {JSON.stringify(graphragTrace?.seed_chunk_ids ?? [], null, 2)}
+                  </pre>
                 </div>
-                <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
-                  {JSON.stringify(graphragDetails.reasoning_paths ?? [], null, 2)}
-                </pre>
-              </div>
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
-                <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-                  Graph Chunks Used
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                    Top Rerank Scores
+                  </div>
+                  <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
+                    {JSON.stringify(graphragTrace?.top_scores ?? [], null, 2)}
+                  </pre>
                 </div>
-                <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
-                  {JSON.stringify(
-                    (graphragDetails.chunks ?? []).map((c: any) => ({
-                      chunk_id: c.chunk_id,
-                      doc_id: c.doc_id,
-                    })),
-                    null,
-                    2
-                  )}
-                </pre>
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                    Graph Chunks Used
+                  </div>
+                  <pre className="mt-2 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-[var(--text-primary)]">
+                    {JSON.stringify(
+                      (graphragDetails.chunks ?? []).map((c: any) => ({
+                        chunk_id: c.chunk_id,
+                        doc_id: c.doc_id,
+                        score: c.score,
+                        source: c.source,
+                        graph_distance: c.graph_distance,
+                      })),
+                      null,
+                      2
+                    )}
+                  </pre>
+                </div>
               </div>
             </div>
           )}
@@ -408,6 +452,17 @@ function Badge({ children }: { children: ReactNode }) {
     <span className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-200">
       {children}
     </span>
+  );
+}
+
+function TraceMetric({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--background)] p-3">
+      <div className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-semibold text-[var(--text-primary)]">{value}</div>
+    </div>
   );
 }
 

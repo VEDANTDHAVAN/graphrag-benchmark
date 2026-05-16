@@ -313,8 +313,8 @@
     "question": "How do the papers 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' and 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connect through galaxies?",
     "correct_answer": "Both papers discuss galaxies. 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' frames it around dwarf, galaxies, local, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
     "expected_entities": [
-      "dwarf",
       "galaxies",
+      "dwarf",
       "search"
     ],
     "difficulty": "hard",
@@ -329,10 +329,10 @@
     "correct_answer": "Both papers discuss scientific modeling. 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' frames it around acoustic, high, generation, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
     "expected_entities": [
       "galaxies",
-      "scientific modeling",
       "search",
-      "high",
-      "acoustic"
+      "acoustic",
+      "scientific modeling",
+      "high"
     ],
     "difficulty": "hard",
     "category": "multihop",
@@ -345,11 +345,11 @@
     "question": "How do the papers 'invariants are a popular concept in object recognition and image retrieval  @xcite .' and 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connect through scientific modeling?",
     "correct_answer": "Both papers discuss scientific modeling. 'invariants are a popular concept in object recognition and image retrieval  @xcite .' frames it around invariants, presents, under, while 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connects it to loops, magnetic, flux.",
     "expected_entities": [
-      "scientific modeling",
-      "invariants",
-      "loops",
       "magnetic",
-      "presents"
+      "scientific modeling",
+      "presents",
+      "invariants",
+      "loops"
     ],
     "difficulty": "hard",
     "category": "multihop",
@@ -363,9 +363,9 @@
     "correct_answer": "Both papers discuss scientific modeling. 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' frames it around torsion, statefinder, diagnostic, while 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connects it to phenomenological, waveforms, waveform.",
     "expected_entities": [
       "waveforms",
-      "scientific modeling",
       "torsion",
       "statefinder",
+      "scientific modeling",
       "phenomenological"
     ],
     "difficulty": "hard",
@@ -379,11 +379,11 @@
     "question": "How do the papers 'in quantum information processing , information is stored and processed with a quantum system .' and 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connect through scientific modeling?",
     "correct_answer": "Both papers discuss scientific modeling. 'in quantum information processing , information is stored and processed with a quantum system .' frames it around qubits, quantum, error, while 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connects it to model, kinematics, dimming.",
     "expected_entities": [
+      "kinematics",
+      "quantum",
       "qubits",
       "scientific modeling",
-      "quantum",
-      "model",
-      "kinematics"
+      "model"
     ],
     "difficulty": "hard",
     "category": "multihop",
@@ -396,10 +396,10 @@
     "question": "How do the papers 'it is well known that the classical magnetoresistance ( mr ) in metals or semiconductors with a closed free electron fermi surface increases' and 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' connect through scientific modeling?",
     "correct_answer": "Both papers discuss scientific modeling. 'it is well known that the classical magnetoresistance ( mr ) in metals or semiconductors with a closed free electron fermi surface increases' frames it around linear, positive, magnetoresistance, while 'a magnitude limited complete census of variable stars in nearby dwarf galaxies allows important contributions to the star formation history ' connects it to dwarf, galaxies, local.",
     "expected_entities": [
-      "linear",
       "galaxies",
-      "scientific modeling",
       "positive",
+      "linear",
+      "scientific modeling",
       "dwarf"
     ],
     "difficulty": "hard",
@@ -414,10 +414,10 @@
     "correct_answer": "Both papers discuss scientific modeling. 'in 1957 g.a .  askaryan pointed out that ionisation and cavitation along a track of an ionising particle through a liquid leads to hydrodyna' frames it around acoustic, high, generation, while 'the epoch of reionization signified the appearance of the first stars and galaxies within the first billion years after the big bang , and t' connects it to galaxies, search, number.",
     "expected_entities": [
       "galaxies",
-      "scientific modeling",
       "search",
-      "high",
-      "acoustic"
+      "acoustic",
+      "scientific modeling",
+      "high"
     ],
     "difficulty": "hard",
     "category": "multihop",
@@ -430,11 +430,11 @@
     "question": "How do the papers 'invariants are a popular concept in object recognition and image retrieval  @xcite .' and 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connect through scientific modeling?",
     "correct_answer": "Both papers discuss scientific modeling. 'invariants are a popular concept in object recognition and image retrieval  @xcite .' frames it around invariants, presents, under, while 'it is believed that solar magnetic fields are created in the tachocline , the interface between the convection zone and the radiative interi' connects it to loops, magnetic, flux.",
     "expected_entities": [
-      "scientific modeling",
-      "invariants",
-      "loops",
       "magnetic",
-      "presents"
+      "scientific modeling",
+      "presents",
+      "invariants",
+      "loops"
     ],
     "difficulty": "hard",
     "category": "multihop",
@@ -448,9 +448,9 @@
     "correct_answer": "Both papers discuss scientific modeling. 'the current observations , such as sneia ( supernovae type ia ) , cmb ( cosmic microwave background ) and large scale structure , converge o' frames it around torsion, statefinder, diagnostic, while 'developments are currently underway to promote the sensitivity of ligo and to improve its prospect for detecting gravitational waves emitted' connects it to phenomenological, waveforms, waveform.",
     "expected_entities": [
       "waveforms",
-      "scientific modeling",
       "torsion",
       "statefinder",
+      "scientific modeling",
       "phenomenological"
     ],
     "difficulty": "hard",
@@ -464,11 +464,11 @@
     "question": "How do the papers 'in quantum information processing , information is stored and processed with a quantum system .' and 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connect through scientific modeling?",
     "correct_answer": "Both papers discuss scientific modeling. 'in quantum information processing , information is stored and processed with a quantum system .' frames it around qubits, quantum, error, while 'it has become a generally agreed concept that the euv dimming observed during the onset of a _ coronal mass ejection ( cme ) _ manifests the' connects it to model, kinematics, dimming.",
     "expected_entities": [
+      "kinematics",
+      "quantum",
       "qubits",
       "scientific modeling",
-      "quantum",
-      "model",
-      "kinematics"
+      "model"
     ],
     "difficulty": "hard",
     "category": "multihop",

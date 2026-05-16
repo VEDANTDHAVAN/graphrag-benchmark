@@ -49,6 +49,7 @@ def copy_tree(source: Path, target: Path) -> None:
         ".env",
         ".env.*",
         "*.log",
+        "*.pdf",
     )
     shutil.copytree(source, target, ignore=ignore)
 

@@ -33,13 +33,25 @@ def _rank_chunks(query: str, chunks: List[Dict], limit: int) -> List[Dict]:
     if not tokens:
         return chunks[:limit]
 
-    def score(chunk: Dict) -> tuple[int, int]:
+    def score(chunk: Dict) -> tuple[int, int, int]:
         text = normalize_text(chunk.get("text", ""))
         overlap = sum(1 for token in tokens if token in text)
+        title_bonus = 4 if overlap >= min(4, len(tokens)) and chunk.get("chunk_id", "").endswith("_chunk_0000") else 0
         phrase_bonus = 3 if normalize_text(query)[:80] in text else 0
-        return overlap + phrase_bonus, len(text)
+        return overlap + title_bonus + phrase_bonus, overlap, len(text)
 
-    return sorted(chunks, key=score, reverse=True)[:limit]
+    ranked = sorted(chunks, key=score, reverse=True)
+    out = []
+    seen = set()
+    for chunk in ranked:
+        key = chunk.get("chunk_id") or normalize_text(chunk.get("text", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(chunk)
+        if len(out) >= limit:
+            break
+    return out
 
 
 def retrieve_graph_context(
@@ -62,6 +74,8 @@ def retrieve_graph_context(
 
     if matched_entities:
         candidates = client.get_neighbor_chunks(matched_entities, hops=hops, max_chunks=max(k * 8, 32))
+        _, lexical_candidates = client.keyword_fallback(query, max_chunks=max(k * 8, 32))
+        candidates = [*lexical_candidates, *candidates]
         chunks = _rank_chunks(query, candidates, k)
         reasoning_paths = client.get_reasoning_paths(matched_entities, max_paths=5)
         return {

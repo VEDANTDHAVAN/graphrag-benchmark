@@ -51,6 +51,93 @@ To keep judging easy and reproducible, NetworkX is the default implementation.
 
 **The benchmark conclusions are based on retrieval methodology, not on dependence on a specific graph database.**
 
+## Why Hybrid GraphRAG?
+
+Pure graph traversal can drift when the first matched node is too broad or unrelated to the user's intent. Hybrid GraphRAG fixes that by grounding retrieval semantically first, then using the graph for relationship-aware expansion.
+
+```text
+Query
+  -> ChromaDB seed retrieval
+  -> NetworkX graph expansion
+  -> Semantic reranking
+  -> Token-budgeted context
+  -> LLM answer
+```
+
+**Basic RAG** is vector retrieval only: it finds semantically similar chunks and sends them to the model.
+
+**Hybrid GraphRAG** is vector retrieval plus graph traversal plus reranking: ChromaDB selects high-similarity seed chunks, NetworkX expands to related entities and neighboring chunks, semantic reranking removes noisy graph neighbors, and token budgeting keeps the prompt compact.
+
+This reflects real-world GraphRAG systems: vector search provides semantic grounding, graph traversal adds multi-hop evidence, and reranking prevents irrelevant graph context from entering the prompt.
+
+### Hybrid GraphRAG Implementation Notes
+
+The production GraphRAG path is implemented in:
+
+```text
+pipelines/graphrag/hybrid_retriever.py
+pipelines/graphrag/graph_utils.py
+pipelines/graphrag/reranker.py
+pipelines/shared/token_utils.py
+```
+
+The public pipeline entrypoint remains:
+
+```text
+pipelines/graphrag/graphrag_pipeline.py::run_graphrag
+```
+
+API response compatibility is preserved. Existing fields such as `answer`, `context`, `tokens`, `latency`, and `details.chunks` are still returned. Hybrid-specific metadata is added under `retrieval_trace`:
+
+```json
+{
+  "mode": "hybrid_graphrag",
+  "seed_count": 8,
+  "expanded_node_count": 40,
+  "expanded_edge_count": 12,
+  "reranked_candidate_count": 48,
+  "fallback_used": false,
+  "graph_hops": 1
+}
+```
+
+Fallback is not treated as a failure. If graph expansion is empty, noisy, or unavailable, GraphRAG safely falls back to the semantic seed chunks while still reporting `mode = "hybrid_graphrag"` and `fallback_used = true`.
+
+### Hybrid GraphRAG Regression Query
+
+Use this query to verify that GraphRAG is grounded by semantic seeds before graph traversal:
+
+```text
+How do variable stars help determine distance and star formation history in nearby dwarf galaxies?
+```
+
+Expected GraphRAG context should mention:
+
+- variable stars
+- nearby dwarf galaxies
+- distance determinations
+- star formation history
+- tracers of star formation
+
+It should not retrieve unrelated Jacobi-equation context.
+
+Quick smoke test:
+
+```powershell
+python -c "from pipelines.graphrag.hybrid_retriever import HybridGraphRetriever; q='How do variable stars help determine distance and star formation history in nearby dwarf galaxies?'; r=HybridGraphRetriever(final_top_k=4, token_budget=1200).retrieve(q); print(r['retrieval_trace']); print('\n---\n'.join((c.get('chunk_id','')+': '+c.get('text','')[:250]).replace('\n',' ') for c in r['selected_contexts']))"
+```
+
+Dashboard verification:
+
+1. Start backend and frontend.
+2. Open `/benchmark`.
+3. Run the regression query above.
+4. In **GraphRAG Details**, confirm:
+   - Mode: Hybrid GraphRAG
+   - Seed chunks are shown
+   - Expanded nodes and reranked candidates are shown
+   - Fallback used is shown as Yes/No
+
 ## Repository Layout
 
 ```text
@@ -230,6 +317,8 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for deeper deployment options.
 
 ## Deploy Backend to Hugging Face Spaces
 
+The backend deployment includes the Hybrid GraphRAG retriever, ChromaDB artifacts, NetworkX graph artifacts, and benchmark result JSON files. Rebuild the Space bundle after any backend, pipeline, data, or README change.
+
 Build a Space bundle:
 
 ```powershell
@@ -266,6 +355,18 @@ git commit -m "Deploy GraphRAG benchmark backend"
 git push
 ```
 
+For an existing Space checkout, copy the rebuilt bundle into the Space repo and commit:
+
+```powershell
+python scripts/prepare_hf_space.py
+Copy-Item -Recurse -Force .\dist\hf-space\* .\hf-space-upload\
+cd hf-space-upload
+git status
+git add .
+git commit -m "Deploy hybrid GraphRAG retrieval update"
+git push
+```
+
 If Git authentication fails:
 
 ```powershell
@@ -293,6 +394,8 @@ Test:
 https://your-username-your-space.hf.space/health
 https://your-username-your-space.hf.space/ready
 ```
+
+After deployment, test the live API with the regression query from the benchmark page. The GraphRAG trace should report `mode = "hybrid_graphrag"` and select variable-star/dwarf-galaxy context.
 
 ## Deploy Frontend to Vercel
 
@@ -326,6 +429,16 @@ and live queries from:
 
 ```text
 POST /api/query
+```
+
+The `/benchmark` page now displays Hybrid GraphRAG retrieval trace fields: seed chunks, expanded nodes, expanded edges, reranked candidates, and fallback status. Redeploy Vercel after frontend changes so these fields are visible in production.
+
+For a local production check before deploying:
+
+```powershell
+cd frontend
+npx.cmd tsc --noEmit
+npm.cmd run build
 ```
 
 ## Docker Compose Deployment
@@ -484,3 +597,45 @@ python scripts/prepare_hf_space.py
 # deployment validation
 python scripts/validate_deployment.py
 ```
+
+## Commit and Production Rollout
+
+Recommended commit from the repo root:
+
+```powershell
+git status
+git add README.md pipelines/graphrag/hybrid_retriever.py pipelines/graphrag/graph_utils.py pipelines/graphrag/reranker.py pipelines/graphrag/graphrag_pipeline.py pipelines/shared/token_utils.py pipelines/shared/__init__.py scripts/run_full_benchmark.py frontend/src/app/benchmark/page.tsx tests/test_hybrid_graphrag_retrieval.py
+git commit -m "Implement hybrid GraphRAG retrieval with semantic reranking"
+git push origin main
+```
+
+Production rollout:
+
+```powershell
+# 1. Rebuild the Hugging Face Spaces backend bundle
+python scripts/prepare_hf_space.py
+
+# 2. Copy bundle into your local Space checkout
+Copy-Item -Recurse -Force .\dist\hf-space\* .\hf-space-upload\
+
+# 3. Push backend update to Hugging Face Spaces
+cd hf-space-upload
+git status
+git add .
+git commit -m "Deploy hybrid GraphRAG retrieval update"
+git push
+
+# 4. Redeploy frontend on Vercel
+# Push frontend changes to the GitHub repo connected to Vercel,
+# or trigger Redeploy from the Vercel dashboard.
+```
+
+Post-deploy checks:
+
+```text
+GET https://your-username-your-space.hf.space/health
+GET https://your-username-your-space.hf.space/ready
+Open https://your-vercel-app.vercel.app/benchmark
+```
+
+Run the variable-stars regression query in `/benchmark` and confirm the production GraphRAG details panel shows `Hybrid GraphRAG`, seed chunks, reranked candidates, and relevant dwarf-galaxy context.

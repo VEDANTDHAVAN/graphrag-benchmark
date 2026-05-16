@@ -76,6 +76,7 @@ def normalize_result(runner, question):
     reasoning_paths = details.get("reasoning_paths") or []
     matched_entities = details.get("matched_entities") or []
     graph_chunks = details.get("chunks") or []
+    retrieval_trace = details.get("retrieval_trace") or raw.get("retrieval_trace") or {}
 
     return {
         "status": status,
@@ -86,8 +87,17 @@ def normalize_result(runner, question):
         "latency_seconds": raw.get("latency", time.time() - started) or 0,
         "estimated_cost": estimate_cost(total_tokens),
         "retrieved_context_count": context_count,
-        "graph_nodes_used": len(matched_entities) + len(graph_chunks),
-        "graph_edges_used": sum(max(0, len(path) - 1) for path in reasoning_paths),
+        "graph_nodes_used": retrieval_trace.get("expanded_node_count", len(matched_entities) + len(graph_chunks)),
+        "graph_edges_used": retrieval_trace.get(
+            "expanded_edge_count",
+            sum(max(0, len(path) - 1) for path in reasoning_paths),
+        ),
+        "seed_chunks_used": retrieval_trace.get("seed_count", details.get("seed_chunks_used", 0)),
+        "fallback_used": retrieval_trace.get("fallback_used", details.get("fallback_used", False)),
+        "reranked_candidate_count": retrieval_trace.get(
+            "reranked_candidate_count",
+            details.get("reranked_candidate_count", 0),
+        ),
     }
 
 
